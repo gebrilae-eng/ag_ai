@@ -4,6 +4,7 @@ description: >
   TDD specialist — enforces write-tests-first methodology.
   Red → Green → Refactor. Ensures 80%+ test coverage.
 model: anthropic/claude-sonnet-4-5
+mode: primary
 tools:
   - read
   - write

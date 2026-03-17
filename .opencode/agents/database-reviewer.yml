@@ -4,6 +4,7 @@ description: >
   Database review specialist - checks schema quality, query safety,
   migration safety, indexing, and data integrity.
 model: anthropic/claude-sonnet-4-5
+mode: primary
 tools:
   - read
   - glob

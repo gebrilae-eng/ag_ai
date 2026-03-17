@@ -4,6 +4,7 @@ description: >
   Spec-first workflow specialist - drives specify, clarify, plan,
   tasks, and implementation handoff through the specs/ directory.
 model: anthropic/claude-sonnet-4-5
+mode: primary
 tools:
   - read
   - write

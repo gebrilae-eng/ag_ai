@@ -4,6 +4,7 @@ description: >
   Sub-agent — n8n automation specialist. Workflow design,
   node configuration, error handling, MCP tool usage.
 model: anthropic/claude-sonnet-4-5
+mode: subagent
 tools:
   - read
   - write

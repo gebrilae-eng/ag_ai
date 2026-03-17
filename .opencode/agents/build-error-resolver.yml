@@ -4,6 +4,7 @@ description: >
   Build and runtime error specialist - diagnoses syntax, dependency,
   config, and startup failures and fixes them with minimal changes.
 model: anthropic/claude-sonnet-4-5
+mode: primary
 tools:
   - read
   - write

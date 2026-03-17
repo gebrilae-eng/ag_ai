@@ -4,6 +4,7 @@ description: >
   Project manager — reads AGENTS.md and routes any task to the right
   specialist agent. Start here for any complex or multi-step request.
 model: anthropic/claude-sonnet-4-5
+mode: primary
 tools:
   - read
   - glob

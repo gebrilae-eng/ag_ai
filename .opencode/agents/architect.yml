@@ -4,6 +4,7 @@ description: >
   Software architect — system design, trade-off analysis, scalability
   planning, and architectural decisions. Runs on Opus for best results.
 model: anthropic/claude-opus-4-5
+mode: primary
 tools:
   - read
   - glob

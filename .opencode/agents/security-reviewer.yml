@@ -4,6 +4,7 @@ description: >
   Security specialist — OWASP Top 10 audit, secrets detection,
   input validation, SQL injection, XSS, auth vulnerabilities.
 model: anthropic/claude-sonnet-4-5
+mode: primary
 tools:
   - read
   - bash

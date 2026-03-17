@@ -4,6 +4,7 @@ description: >
   Refactoring specialist - improves structure without changing behavior,
   removes duplication, and keeps tests green throughout.
 model: anthropic/claude-sonnet-4-5
+mode: primary
 tools:
   - read
   - write

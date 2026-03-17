@@ -4,6 +4,7 @@ description: >
   Test-writing specialist - creates unit, integration, and E2E tests
   with strong edge-case and error-path coverage.
 model: anthropic/claude-sonnet-4-5
+mode: subagent
 tools:
   - read
   - write

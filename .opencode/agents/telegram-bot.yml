@@ -4,6 +4,7 @@ description: >
   Sub-agent — Telegram bot specialist. HTML formatting,
   message splitting at 3800 chars, keyboard layouts.
 model: anthropic/claude-sonnet-4-5
+mode: subagent
 tools:
   - read
   - write

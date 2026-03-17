@@ -4,6 +4,7 @@ description: >
   API and integration specialist - REST endpoints, third-party APIs,
   webhooks, request/response design, and integration safety.
 model: anthropic/claude-sonnet-4-5
+mode: primary
 tools:
   - read
   - write

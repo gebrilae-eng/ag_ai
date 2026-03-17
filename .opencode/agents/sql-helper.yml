@@ -4,6 +4,7 @@ description: >
   Sub-agent — MySQL query generation specialist.
   Delegate all complex SQL queries here.
 model: anthropic/claude-sonnet-4-5
+mode: subagent
 tools:
   - read
   - grep

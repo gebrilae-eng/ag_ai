@@ -4,6 +4,7 @@ description: >
   Sub-agent — systematic bug investigation and resolution.
   Reproduce → Isolate → Hypothesize → Test → Fix → Verify.
 model: anthropic/claude-sonnet-4-5
+mode: subagent
 tools:
   - read
   - bash
