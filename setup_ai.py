@@ -62,6 +62,7 @@ def make_dirs(target):
         ".ai/rules/php",
         ".ai/rules/common",
         ".ai/context",
+        ".opencode/agents",
     ]
     for d in dirs:
         (target / d).mkdir(parents=True, exist_ok=True)
@@ -86,6 +87,11 @@ def show_tree(target):
         print(f"{BLUE}{ind}{Path(root).name}/{RESET}")
         for f in sorted(files):
             print(f"{ind}  {f}")
+    oc = target / ".opencode" / "agents"
+    if oc.exists():
+        print(f"{BLUE}  .opencode/agents/{RESET}")
+        for f in sorted(oc.iterdir()):
+            print(f"    {f.name}")
     for extra in [".claude/commands", "specs", "CLAUDE.md"]:
         p = target / extra
         if p.exists():
@@ -100,17 +106,17 @@ def show_next_steps():
      {YELLOW}.ai/context/STACK.md{RESET}    -- your tech stack
      {YELLOW}.ai/context/RULES.md{RESET}    -- coding conventions
 
-  2. Open Claude Code or OpenCode:
-     {BOLD}claude{RESET}   or   {BOLD}opencode{RESET}
+  2a. Claude Code:
+      {BOLD}cd your-project && claude{RESET}
+      Then: {GREEN}/onboard{RESET}
 
-  3. Run onboarding wizard (auto-fills all context files):
-     {GREEN}/onboard{RESET}
+  2b. OpenCode:
+      {BOLD}cd your-project && opencode{RESET}
+      Then type: {GREEN}Read CLAUDE.md then ask me the onboarding questions{RESET}
 
-  4. Start your first feature:
-     {GREEN}/speckit.specify  I want to build [describe feature]{RESET}
-
-  5. Full workflow:
-     {BLUE}/speckit.specify -> /speckit.plan -> /speckit.tasks -> /tdd -> /verify{RESET}
+  3. Start a feature:
+     {BLUE}/speckit.specify  I want to build [feature]{RESET}
+     or with OpenCode: {BLUE}use orchestrator agent to help me build [feature]{RESET}
 """)
 
 def main():
@@ -123,25 +129,20 @@ def main():
     info(f"Target project: {target}")
 
     header("Installing...")
-
-    # Core files
-    copy_item(SCRIPT_DIR / ".ai",      target / ".ai",      ".ai/ (agents + skills + rules)")
-    copy_item(SCRIPT_DIR / ".claude",  target / ".claude",  ".claude/ (ECC commands)")
-    copy_item(SCRIPT_DIR / "CLAUDE.md", target / "CLAUDE.md", "CLAUDE.md")
-
-    # Create any missing dirs
+    copy_item(SCRIPT_DIR / ".ai",          target / ".ai",          ".ai/ (agents + skills + rules)")
+    copy_item(SCRIPT_DIR / ".claude",      target / ".claude",      ".claude/ (Claude Code commands)")
+    copy_item(SCRIPT_DIR / ".opencode",    target / ".opencode",    ".opencode/ (OpenCode agents)")
+    copy_item(SCRIPT_DIR / "CLAUDE.md",    target / "CLAUDE.md",    "CLAUDE.md")
     make_dirs(target)
-
-    # Gitignore
     update_gitignore(target)
 
-    # Count installed md files
-    md_count = len(list((target / ".ai").rglob("*.md"))) if (target / ".ai").exists() else 0
+    ai_count = len(list((target / ".ai").rglob("*.md"))) if (target / ".ai").exists() else 0
+    oc_count = len(list((target / ".opencode" / "agents").glob("*.yml"))) if (target / ".opencode" / "agents").exists() else 0
 
     show_tree(target)
     show_next_steps()
 
-    print(f"{GREEN}{BOLD}  Done! {md_count} agent/skill/rule files installed.{RESET}\n")
+    print(f"{GREEN}{BOLD}  Done!  {ai_count} MD files + {oc_count} OpenCode agents installed.{RESET}\n")
 
 
 if __name__ == "__main__":

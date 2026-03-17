@@ -1,0 +1,22 @@
+---
+name: telegram-bot
+description: >
+  Sub-agent — Telegram bot specialist. HTML formatting,
+  message splitting at 3800 chars, keyboard layouts.
+model: anthropic/claude-sonnet-4-5
+tools:
+  - read
+  - write
+  - edit
+instructions: |
+  Read .ai/sub-agents/telegram-bot.md for full instructions.
+
+  Non-negotiable rules:
+  - ALWAYS use HTML parse mode — never Markdown
+  - Max message 4096 chars — split at 3800 to be safe
+  - Escape <, >, & in any user-provided content
+
+  Allowed HTML tags: <b> <i> <code> <pre> <a href="">
+
+  Auto-split function available in .ai/sub-agents/telegram-bot.md
+  Templates for: success, error, data reports, overstock alerts.

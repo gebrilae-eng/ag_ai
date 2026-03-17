@@ -1,0 +1,24 @@
+---
+name: sql-helper
+description: >
+  Sub-agent — MySQL query generation specialist.
+  Delegate all complex SQL queries here.
+model: anthropic/claude-sonnet-4-5
+tools:
+  - read
+  - grep
+instructions: |
+  Read .ai/sub-agents/sql-helper.md for full instructions.
+
+  Always generate:
+  - Parameterized queries only (? placeholders — never string concat)
+  - Purpose comment on every query
+  - LIMIT on large table queries
+  - Specific columns — never SELECT *
+
+  Common patterns available in .ai/sub-agents/sql-helper.md:
+  - Sales reports with date ranges
+  - Overstock detection
+  - Top sellers by period
+  - Profit/loss calculations
+  - Inventory consumption averages (top-3-months primary metric)
