@@ -4,244 +4,196 @@
 
 ---
 
-## الخطوات الـ 3 لأي مشروع جديد
+## الخطوات لكل مشروع جديد
 
 ```
-1. install  ← ثبّت الـ agents والـ commands في المشروع
-2. wizard   ← أجاوب على أسئلة عن المشروع وهيملي الملفات
-3. claude / opencode ← ابدأ الشغل
+1. install  ← ثبّت الـ agents والـ commands
+2. wizard   ← امل الملفات بمعلومات مشروعك
+3. opencode / claude ← ابدأ الشغل
 ```
 
 ---
 
-## 1️⃣ أول مرة على الجهاز — Clone
-
-في **أي مكان على أي drive**:
+## 1️⃣ أول مرة على الجهاز
 ```cmd
-git clone https://github.com/gebrilae-eng/ag_ai.git D:\tools\ag_ai
 git clone https://github.com/gebrilae-eng/ag_ai.git F:\ag_ai
-git clone https://github.com/gebrilae-eng/ag_ai.git C:\Users\AG\ag_ai
 ```
 
 ---
 
-## 2️⃣ تثبيت في مشروع
-
+## 2️⃣ مشروع جديد — خطوتين بس
 ```cmd
-D:\tools\ag_ai\install.bat  C:\laragon\www\my-project
-F:\ag_ai\install.bat        D:\projects\new-app
-F:\ag_ai\install.bat        .
+F:\ag_ai\install.bat  D:\my-project
+F:\ag_ai\wizard.bat   D:\my-project
 ```
 
-النقطة `.` = الـ folder الحالي.
-الـ `install.bat` بيسألك سؤالين:
-- بتستخدم Claude Code / OpenCode / الاتنين؟
-- إيه المكونات اللي تثبّتها؟
-
----
-
-## 3️⃣ Wizard — امل الملفات قبل ما تبدأ
-
-بعد الـ install، شغّل الـ wizard على نفس المشروع:
-
+أو أمر واحد:
 ```cmd
-D:\tools\ag_ai\wizard.bat  C:\laragon\www\my-project
-F:\ag_ai\wizard.bat        D:\projects\new-app
-```
-
-أو من PowerShell:
-```powershell
-F:\ag_ai\wizard.ps1 -ProjectPath D:\projects\new-app
-```
-
-### الـ Wizard هيسألك 4 sections:
-
-```
-1 / 4  Project Info
-  → Project name
-  → What does it do?
-  → Type (web / api / bot / automation)
-  → Status (new / development / production)
-
-2 / 4  Tech Stack
-  → Backend (PHP vanilla / Laravel / Node.js / Python)
-  → Database (MySQL 8 + db_name / PostgreSQL / none)
-  → Frontend (HTML/JS / React / Blade / API only)
-  → Local dev (Laragon / XAMPP / Docker)
-  → Integrations (Telegram / n8n / REST APIs / ...)
-
-3 / 4  Rules & Conventions
-  → Hard business rules (never delete records / ...)
-  → Naming conventions
-  → Docs language (English / Arabic / Both)
-
-4 / 4  AI Tool
-  → claude / opencode / both
-```
-
-### الملفات اللي بيكتبها تلقائياً:
-```
-.ai/context/PROJECT.md              ← وصف المشروع
-.ai/context/STACK.md                ← الـ tech stack
-.ai/context/RULES.md                ← قواعد الكود
-CLAUDE.md                           ← entry point للـ AI
-.ai/spec/memory/constitution.md     ← مبادئ المشروع
-.ai/context/wizard-answers.json     ← إجاباتك (للـ re-run)
+F:\ag_ai\new-project.bat
 ```
 
 ---
 
-## 4️⃣ ابدأ الشغل
-
-### Claude Code
+## 3️⃣ ابدأ الشغل
 ```cmd
-cd C:\path\to\your-project
-claude
-```
-بعدين ابدأ أي feature:
-```
-/speckit.specify  I want to build [feature description]
-```
-
-### OpenCode
-```cmd
-cd C:\path\to\your-project
-opencode
-```
-بعدين:
-```
-use orchestrator agent to help me build [feature description]
+cd D:\my-project
+opencode        ← OpenCode
+claude          ← Claude Code
 ```
 
 ---
 
-## 5️⃣ تحديث ag_ai
+## 4️⃣ الـ Workflow الكامل في OpenCode
 
-```cmd
-F:\ag_ai\update.bat     ← CMD
-F:\ag_ai\update.ps1     ← PowerShell
+### أول مرة في مشروع جديد
+```
+use orchestrator agent to manage the project and set up agents
+```
+بيراجع المشروع ويضبط الـ AGENTS.md تلقائياً.
+
+### Feature جديدة — 4 خطوات
+```
+# 1. اكتب الـ spec (إيه اللي عاوز تبنيه)
+use spec-workflow agent to specify: I want to add [feature description]
+
+# 2. خطة التنفيذ
+use orchestrator agent to plan and manage adding [feature]
+
+# 3. نفّذ كل task
+use [agent] agent to implement [specific task]
+
+# 4. راجع الشغل
+use code-reviewer agent to review the changes
+use security-reviewer agent to audit the implementation
+```
+
+### مثال حقيقي — إضافة n8n
+```
+use spec-workflow agent to specify: I want to add n8n automation
+use orchestrator agent to plan and manage adding n8n
+use architect agent to design the PHP to n8n integration
+use api-agent agent to implement the webhook client
+use n8n-workflow agent to design the first workflow
+use tdd-guide agent to write tests for the integration
+use security-reviewer agent to audit the n8n integration
 ```
 
 ---
 
-## 6️⃣ Workflow — Feature جديدة
+## 5️⃣ الـ Workflow الكامل في Claude Code
 
-### Claude Code
+### Feature جديدة
 ```
-/speckit.specify    ← وصّف إيه اللي عاوز تبنيه
-/speckit.clarify    ← وضّح أي غموض (اختياري)
-/speckit.plan       ← حدد الـ tech stack والـ architecture
-/speckit.tasks      ← قسّم لـ tasks منظمة
-/tdd                ← implement test-first
-/verify             ← quality gate
-/code-review        ← review قبل الـ commit
-/security           ← security audit
+/speckit.specify  I want to add [feature]
+/speckit.plan     tech stack: [your stack]
+/speckit.tasks
+/speckit.implement
+/verify
+/security
 ```
 
-### OpenCode
+---
+
+## 6️⃣ الـ Specs — إزاي تستخدمها وتحدّثها
+
+### بنية الـ spec
 ```
-use orchestrator agent to help me build [feature]
-use tdd-guide agent to implement [function]
-use security-reviewer agent to audit [file]
+specs/
+└── feature-name/
+    ├── spec.md        ← WHAT (requirements, user stories)
+    ├── plan.md        ← HOW (tech decisions, phases)
+    ├── data-model.md  ← DB schema
+    ├── tasks.md       ← ordered task list
+    └── discovery.md   ← research findings (optional)
+```
+
+### إنشاء spec جديدة
+```
+use spec-workflow agent to specify: I want to add [feature]
+```
+
+### تحويل spec لـ plan
+```
+use orchestrator agent to plan and manage adding [feature]
+```
+
+### تحديث spec موجودة
+```
+use spec-workflow agent to update specs/feature-name/spec.md
+[describe what changed]
+```
+
+### مراجعة progress
+```
+use spec-workflow agent to review progress on specs/feature-name/
+```
+
+---
+
+## 7️⃣ الـ Agents — كل agent ومتى تستخدمه
+
+### OpenCode — استدعاء مباشر بالاسم
+```
+use orchestrator agent to [complex multi-step task]
+use spec-workflow agent to specify: [feature]
+use architect agent to design [system or feature]
+use coder agent to implement [function or file]
+use db-agent agent to design schema for [entity]
+use api-agent agent to implement [endpoint]
+use tdd-guide agent to write tests for [function]
+use security-reviewer agent to audit [file or folder]
+use code-reviewer agent to review [file or change]
+use database-reviewer agent to review [schema or query]
+use refactor-cleaner agent to refactor [file]
+use build-error-resolver agent to fix [error message]
+use doc-updater agent to update docs for [change]
 use sql-helper agent to write a query for [description]
-use debugger agent to investigate [bug]
+use telegram-bot agent to format [message or feature]
+use n8n-workflow agent to design workflow for [task]
+use debugger agent to investigate [bug or issue]
+use test-writer agent to write tests for [function]
 ```
 
----
-
-## 7️⃣ الـ Agents المتاحة
-
-### Claude Code — `.ai/agents/`
-| Agent | الـ Command | الدور |
-|-------|------------|-------|
-| orchestrator | تلقائي | يوزّع المهام |
-| coder | تلقائي | كتابة الكود |
-| db-agent | تلقائي | قواعد البيانات |
-| api-agent | تلقائي | API و integrations |
-| spec-workflow | `/speckit.*` | Spec-Driven workflow |
-| ecc/architect | تلقائي | تصميم النظام |
-| ecc/tdd-guide | `/tdd` | test-first |
-| ecc/security-reviewer | `/security` | OWASP audit |
-| ecc/code-reviewer | `/code-review` | مراجعة الكود |
-| ecc/refactor-cleaner | `/refactor-clean` | تنظيف الكود |
-| ecc/build-error-resolver | `/build-fix` | إصلاح errors |
-| ecc/database-reviewer | تلقائي | مراجعة DB |
-| ecc/doc-updater | `/update-docs` | تحديث docs |
-
-### OpenCode — `.opencode/agents/`
-| Agent | الاستدعاء | الدور |
-|-------|-----------|-------|
-| orchestrator | `use orchestrator agent` | يوزّع المهام |
-| architect | `use architect agent` | تصميم النظام |
-| coder | `use coder agent` | كتابة الكود |
-| db-agent | `use db-agent agent` | قواعد البيانات |
-| tdd-guide | `use tdd-guide agent` | test-first |
-| security-reviewer | `use security-reviewer agent` | OWASP audit |
-| sql-helper | `use sql-helper agent` | SQL queries |
-| telegram-bot | `use telegram-bot agent` | Telegram |
-| n8n-workflow | `use n8n-workflow agent` | n8n automation |
-| debugger | `use debugger agent` | debugging |
-
-### Sub-Agents — `.ai/sub-agents/`
-| Agent | الدور |
-|-------|-------|
-| sql-helper | MySQL query generation |
-| telegram-bot | HTML formatting + splitting |
-| n8n-workflow | n8n automation patterns |
-| debugger | systematic bug investigation |
-| test-writer | PHPUnit / Jest test writing |
-
----
-
-## 8️⃣ Slash Commands (Claude Code)
-
-| Command | الوظيفة |
-|---------|---------|
-| `/speckit.constitution` | مبادئ المشروع |
-| `/speckit.specify` | تعريف الـ feature |
-| `/speckit.clarify` | توضيح المتطلبات |
-| `/speckit.plan` | خطة التنفيذ |
-| `/speckit.tasks` | تقسيم لـ tasks |
-| `/speckit.implement` | تنفيذ الـ tasks |
+### Claude Code — Slash Commands
+| Command | متى |
+|---------|-----|
+| `/speckit.specify` | feature جديدة |
+| `/speckit.plan` | بعد الـ spec |
+| `/speckit.tasks` | بعد الـ plan |
+| `/speckit.implement` | تنفيذ |
 | `/tdd` | TDD |
-| `/verify` | فحص شامل |
-| `/quality-gate` | فحص سريع |
-| `/code-review` | مراجعة الكود |
-| `/security` | OWASP audit |
-| `/build-fix` | إصلاح build errors |
-| `/refactor-clean` | تنظيف الكود |
+| `/verify` | quality check |
+| `/security` | audit |
+| `/code-review` | مراجعة |
+| `/build-fix` | إصلاح errors |
+| `/refactor-clean` | تنظيف |
 | `/learn` | استخلاص patterns |
 | `/checkpoint` | حفظ الجلسة |
-| `/update-docs` | تحديث الـ docs |
 
 ---
 
-## 9️⃣ ملخص الملفات في الـ Repo
+## 8️⃣ الـ Scripts
 
-```
-ag_ai/
-├── install.bat      ← تثبيت (CMD)
-├── install.ps1      ← تثبيت (PowerShell)
-├── update.bat       ← تحديث ag_ai (CMD)
-├── update.ps1       ← تحديث ag_ai (PowerShell)
-├── wizard.bat       ← wizard ملي الملفات (CMD)
-├── wizard.ps1       ← wizard ملي الملفات (PowerShell)
-├── setup_ai.py      ← installer script
-├── wizard.py        ← wizard script
-├── CLAUDE.md        ← template
-├── README.md        ← شرح إنجليزي
-├── GUIDE.md         ← دليل عربي (الملف ده)
-├── .ai/             ← agents + rules + skills
-├── .claude/         ← Claude Code commands
-└── .opencode/       ← OpenCode agents
+| Script | الوظيفة |
+|--------|---------|
+| `install.bat / .ps1` | تثبيت في مشروع |
+| `wizard.bat / .ps1` | ملي الملفات |
+| `update.bat / .ps1` | تحديث ag_ai |
+| `new-project.bat` | كل حاجة في أمر واحد |
+
+---
+
+## 9️⃣ تحديث ag_ai
+```cmd
+F:\ag_ai\update.bat      (CMD)
+F:\ag_ai\update.ps1      (PowerShell)
 ```
 
 ---
 
 ## 🔗 روابط
-
 - **الريبو:** https://github.com/gebrilae-eng/ag_ai
-- **Spec Kit:** https://github.com/github/spec-kit
-- **ECC:** https://github.com/affaan-m/everything-claude-code
 - **Claude Code:** https://www.anthropic.com/claude-code
 - **OpenCode:** https://opencode.ai
+- **Spec Kit:** https://github.com/github/spec-kit
+- **ECC:** https://github.com/affaan-m/everything-claude-code
