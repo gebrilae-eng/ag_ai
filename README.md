@@ -10,17 +10,21 @@
 
 ## ⚡ Quick Start
 
+**First time on a new machine:**
 ```cmd
 git clone https://github.com/gebrilae-eng/ag_ai.git C:\temp\ag_ai
-C:\temp\ag_ai\install.bat C:\laragon\www\your-project
+```
+
+**Install into any project:**
+```cmd
+C:\temp\ag_ai\install.bat C:\path\to\your-project
 ```
 
 Then open Claude Code or OpenCode and run:
 ```
 /onboard
 ```
-
-That's it. The wizard asks 15 questions and auto-fills all context files.
+The wizard asks questions about your project and auto-fills all context files.
 
 ---
 
@@ -30,12 +34,13 @@ That's it. The wizard asks 15 questions and auto-fills all context files.
 
 | System | What it brings |
 |--------|---------------|
-| **Custom Agents** | Pharmacy/web-focused roles: SQL, Telegram, n8n, debugging |
+| **Custom Agents** | Specialized roles: SQL, Telegram, n8n, API, debugging |
 | **[Spec Kit](https://github.com/github/spec-kit)** | Spec-driven development — define specs before writing code |
 | **[ECC](https://github.com/affaan-m/everything-claude-code)** | Battle-tested agents: TDD, security, architecture, code review |
 
+---
 
-### 36 Files Installed
+## 📁 Structure — 36 Files Installed
 
 ```
 .ai/
@@ -55,11 +60,11 @@ That's it. The wizard asks 15 questions and auto-fills all context files.
 │       ├── database-reviewer.md   DB schema + query review
 │       └── doc-updater.md         Documentation sync
 ├── sub-agents/
-│   ├── sql-helper.md          MySQL query generation
-│   ├── telegram-bot.md        Telegram HTML formatting + split
+│   ├── sql-helper.md          SQL query generation
+│   ├── telegram-bot.md        Telegram HTML formatting + splitting
 │   ├── n8n-workflow.md        n8n automation patterns
 │   ├── debugger.md            Systematic bug investigation
-│   └── test-writer.md         PHPUnit / Jest test writing
+│   └── test-writer.md         Unit / integration test writing
 ├── rules/
 │   ├── php/                   PHP security, patterns, testing
 │   └── common/                Universal security, coding style
@@ -75,7 +80,6 @@ That's it. The wizard asks 15 questions and auto-fills all context files.
 .claude/commands/
 └── onboard.md        ← interactive setup wizard
 ```
-
 
 ---
 
@@ -122,7 +126,6 @@ That's it. The wizard asks 15 questions and auto-fills all context files.
 | `/speckit.implement` | Execute all tasks in correct order |
 | `/speckit.analyze` | Cross-check spec ↔ plan consistency |
 
-
 ### ECC (Development Quality)
 | Command | Purpose |
 |---------|---------|
@@ -131,7 +134,7 @@ That's it. The wizard asks 15 questions and auto-fills all context files.
 | `/quality-gate` | Quick quality scan on a file or directory |
 | `/code-review` | Comprehensive code review |
 | `/security` | Security vulnerability audit (OWASP Top 10) |
-| `/build-fix` | Diagnose and fix build/compilation errors |
+| `/build-fix` | Diagnose and fix build errors |
 | `/refactor-clean` | Refactor without changing behavior |
 | `/learn` | Extract reusable patterns from current session |
 | `/checkpoint` | Save session state before context compaction |
@@ -149,21 +152,26 @@ That's it. The wizard asks 15 questions and auto-fills all context files.
 To get the latest agents and commands:
 
 ```cmd
-C:\temp\ag_ai\install.bat C:\laragon\www\your-project
+C:\temp\ag_ai\install.bat C:\path\to\your-project
 ```
 
-The `install.bat` always pulls the latest from GitHub before installing.
+`install.bat` always pulls the latest from GitHub before installing.
 
 ---
 
-## 🛠️ Manual Installation
+## 🛠️ How It Works
 
-If you prefer step by step:
-
-```cmd
-cd C:\temp\ag_ai
-git pull
-python setup_ai.py C:\laragon\www\your-project
+```
+install.bat
+    │
+    ├── git fetch + reset --hard   ← always gets latest version
+    │
+    └── setup_ai.py [project path]
+            │
+            ├── copies .ai/        ← all agents, rules, skills
+            ├── copies .claude/    ← slash commands
+            ├── copies CLAUDE.md   ← entry point for AI
+            └── creates dirs       ← specs/, .ai/spec/memory/, etc.
 ```
 
 ---
@@ -174,11 +182,12 @@ python setup_ai.py C:\laragon\www\your-project
 - Git
 - [Claude Code](https://www.anthropic.com/claude-code) or [OpenCode](https://opencode.ai/)
 
+Works on any project path — not tied to any specific framework or directory structure.
+
 ---
 
-## 📚 Sources & Credits
+## 📚 Credits
 
-- **Custom Agents** — built for PHP/MySQL/Telegram/n8n projects
 - **[Spec Kit](https://github.com/github/spec-kit)** — spec-driven development by GitHub
 - **[Everything Claude Code](https://github.com/affaan-m/everything-claude-code)** — battle-tested agents by [@affaan-m](https://github.com/affaan-m)
 
