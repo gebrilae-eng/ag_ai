@@ -2,33 +2,32 @@
 # -*- coding: utf-8 -*-
 """
 ag_ai - Project Setup Wizard
-Run this ONCE at the start of any new project.
-It asks you questions and fills all AI context files automatically.
+Run ONCE at the start of any new project.
+Asks questions and fills all AI context files automatically.
 
 Usage:
   python wizard.py                    (asks for project path)
   python wizard.py D:\my-project      (direct path)
 """
 
-import sys
-import os
-import json
+import sys, os, json
 from pathlib import Path
 
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stdin.reconfigure(encoding="utf-8", errors="replace")
 
-# ─────────────────────────────────────────────
-BOLD  = "\033[1m"
-GREEN = "\033[92m"
-CYAN  = "\033[96m"
-YELLOW= "\033[93m"
-DIM   = "\033[2m"
-RESET = "\033[0m"
+BOLD   = "\033[1m"
+GREEN  = "\033[92m"
+CYAN   = "\033[96m"
+YELLOW = "\033[93m"
+DIM    = "\033[2m"
+RESET  = "\033[0m"
 
-def title(t): print(f"\n{BOLD}{'─'*50}\n  {t}\n{'─'*50}{RESET}")
-def ask(q, default=""): 
+def title(t):
+    print(f"\n{BOLD}{'─'*50}\n  {t}\n{'─'*50}{RESET}")
+
+def ask(q, default=""):
     hint = f" [{default}]" if default else ""
     try:
         val = input(f"{CYAN}  → {q}{hint}: {RESET}").strip()
@@ -40,11 +39,12 @@ def ask_multi(q, options):
     print(f"\n{CYAN}  → {q}{RESET}")
     for i, o in enumerate(options, 1):
         print(f"     {BOLD}{i}{RESET}) {o}")
+    print(f"     {BOLD}0{RESET}) {DIM}All{RESET}")
     try:
-        raw = input(f"     اختار أرقام (مثال: 1 3) أو Enter للكل: ").strip()
+        raw = input("     Choose numbers (e.g. 1 3) or 0 for all: ").strip()
     except (EOFError, KeyboardInterrupt):
         return options
-    if not raw:
+    if not raw or raw == "0":
         return options
     result = []
     for x in raw.split():
@@ -56,7 +56,6 @@ def ask_multi(q, options):
             pass
     return result if result else options
 
-# ─────────────────────────────────────────────
 def get_project_path():
     if len(sys.argv) > 1:
         p = Path(sys.argv[1]).resolve()
@@ -66,42 +65,46 @@ def get_project_path():
         raw = ask("Path to your project folder")
         p = Path(raw).resolve() if raw else Path.cwd()
     if not p.exists():
-        print(f"\n  Creating folder: {p}")
         p.mkdir(parents=True)
     return p
 
 def collect_answers():
-    answers = {}
+    a = {}
 
     title("1 / 4  —  Project Info")
-    answers["name"]        = ask("Project name", "My Project")
-    answers["description"] = ask("What does it do? (1-2 sentences)")
-    answers["type"]        = ask("Type (web / api / bot / automation / other)", "web")
-    answers["status"]      = ask("Status (new / development / production)", "new")
+    a["name"]        = ask("Project name", "My Project")
+    a["description"] = ask("What does it do? (1-2 sentences)")
+    a["type"]        = ask("Type (web / api / bot / automation / other)", "web")
+    a["status"]      = ask("Status (new / development / production)", "new")
+    a["out_of_scope"] = ask("What does this project NOT do?", "")
 
     title("2 / 4  —  Tech Stack")
-    answers["backend"]  = ask("Backend (e.g. PHP vanilla / PHP+Laravel / Node.js / Python)", "PHP vanilla")
-    answers["database"] = ask("Database (e.g. MySQL 8 + my_db / PostgreSQL / none)", "MySQL 8")
-    answers["frontend"] = ask("Frontend (e.g. HTML/JS / React / Blade / API only)", "HTML/CSS/JS")
-    answers["local"]    = ask("Local dev tool (e.g. Laragon / XAMPP / Docker)", "Laragon")
-    answers["integrations"] = ask_multi(
+    a["backend"]   = ask("Backend (e.g. PHP vanilla / PHP+Laravel / Node.js)", "PHP vanilla")
+    a["db_engine"] = ask("Database engine (e.g. MySQL 8 / PostgreSQL / none)", "MySQL 8")
+    a["db_name"]   = ask("Database name (e.g. pharmacy_db / my_db)", "my_db")
+    a["db_user"]   = ask("DB username", "root")
+    a["db_pass"]   = ask("DB password (leave blank if none)", "")
+    a["frontend"]  = ask("Frontend (e.g. HTML/JS / React / Blade / API only)", "HTML/CSS/JS")
+    a["local"]     = ask("Local dev tool (e.g. Laragon / XAMPP / Docker)", "Laragon")
+    a["integrations"] = ask_multi(
         "Integrations?",
         ["Telegram bot", "n8n workflows", "REST APIs", "Email", "WhatsApp", "None"]
     )
 
     title("3 / 4  —  Rules & Conventions")
-    answers["hard_rules"] = ask("Any hard business rules? (e.g. never delete records)", "")
-    answers["naming"]     = ask("Any special naming? (or press Enter for defaults)", "")
-    answers["language"]   = ask("Docs language (English / Arabic / Both)", "Both")
+    a["hard_rules"] = ask("Hard business rules? (e.g. never delete records)", "")
+    a["naming"]     = ask("Special naming conventions? (Enter = defaults)", "")
+    a["language"]   = ask("Docs language (English / Arabic / Both)", "Both")
 
     title("4 / 4  —  AI Tool")
-    answers["ai_tool"] = ask("AI tool (claude / opencode / both)", "both")
+    a["ai_tool"] = ask("AI tool (claude / opencode / both)", "both")
 
-    return answers
+    return a
 
-
-# ─────────────────────────────────────────────
 def write_project_md(path, a):
+    out_of_scope = a.get("out_of_scope", "").strip()
+    if not out_of_scope:
+        out_of_scope = "Nothing defined yet"
     integrations = "\n".join(f"- {i}" for i in a["integrations"])
     content = f"""# Project Overview
 
@@ -121,12 +124,15 @@ def write_project_md(path, a):
 {integrations}
 
 ## Out of Scope
-- [Add what this project does NOT do]
+- {out_of_scope}
 """
     (path / ".ai/context/PROJECT.md").write_text(content, encoding="utf-8")
     print(f"  {GREEN}OK{RESET}  .ai/context/PROJECT.md")
 
 def write_stack_md(path, a):
+    integrations = "\n".join(f"- {i}" for i in a["integrations"])
+    db_pass_line = a["db_pass"] if a["db_pass"] else ""
+    app_name = a["name"].upper().replace(" ", "_")
     content = f"""# Tech Stack
 
 ## Backend
@@ -134,30 +140,31 @@ def write_stack_md(path, a):
 - Local Server: `{a["local"]}`
 
 ## Database
-- Engine: `{a["database"]}`
+- Engine: `{a["db_engine"]}`
+- Name: `{a["db_name"]}`
 
 ## Frontend
 - `{a["frontend"]}`
 
 ## Integrations
-{chr(10).join(f"- {i}" for i in a["integrations"])}
+{integrations}
 
 ## Environment Variables
 ```env
-APP_NAME={a["name"].replace(" ", "_").upper()}
+APP_NAME={app_name}
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=
-DB_USERNAME=root
-DB_PASSWORD=
+DB_DATABASE={a["db_name"]}
+DB_USERNAME={a["db_user"]}
+DB_PASSWORD={db_pass_line}
 ```
 """
     (path / ".ai/context/STACK.md").write_text(content, encoding="utf-8")
     print(f"  {GREEN}OK{RESET}  .ai/context/STACK.md")
 
 def write_rules_md(path, a):
-    hard = f"\n- {a['hard_rules']}" if a["hard_rules"] else "\n- [Add project-specific rules]"
-    naming = f"\n- {a['naming']}" if a["naming"] else "\n- snake_case for DB tables, camelCase for functions"
+    hard = f"- {a['hard_rules']}" if a["hard_rules"].strip() else "- No additional rules defined"
+    naming = f"- {a['naming']}" if a["naming"].strip() else "- snake_case for DB tables, camelCase for functions"
     content = f"""# Coding Rules & Conventions
 
 ## Universal Rules
@@ -184,9 +191,19 @@ def write_rules_md(path, a):
     (path / ".ai/context/RULES.md").write_text(content, encoding="utf-8")
     print(f"  {GREEN}OK{RESET}  .ai/context/RULES.md")
 
-
 def write_claude_md(path, a):
     tool = a["ai_tool"].lower()
+    claude_section = ""
+    if "claude" in tool or "both" in tool:
+        claude_section = """
+## Claude Code
+```
+/speckit.specify  I want to build [feature]
+/tdd              implement test-first
+/verify           quality check
+/security         security audit
+```
+"""
     oc_section = ""
     if "open" in tool or "both" in tool:
         oc_section = """
@@ -197,26 +214,13 @@ use tdd-guide agent to implement [function]
 use security-reviewer agent to audit [file]
 ```
 """
-    claude_section = ""
-    if "claude" in tool or "both" in tool:
-        claude_section = """
-## Claude Code
-```
-/onboard          ← first time setup
-/speckit.specify  ← new feature
-/tdd              ← implement test-first
-/verify           ← quality check
-/security         ← security audit
-```
-"""
     content = f"""# AI Agent Instructions — {a["name"]}
 
 > Entry point for Claude Code & OpenCode.
 
-## Read First
-- `.ai/context/PROJECT.md` — what we're building
-- `.ai/context/STACK.md`   — tech stack: {a["backend"]} + {a["database"]}
-- `.ai/context/RULES.md`   — coding rules (mandatory)
+## Project Context
+- Stack: `{a["backend"]}` + `{a["db_engine"]} / {a["db_name"]}` + `{a["frontend"]}`
+- Read `.ai/context/PROJECT.md`, `.ai/context/STACK.md`, `.ai/context/RULES.md` before any task
 
 ## Agent Routing
 | Task | Agent |
@@ -238,59 +242,58 @@ use security-reviewer agent to audit [file]
 - NEVER SELECT * in production
 - NEVER hardcode credentials
 - ALWAYS validate user input
+- ALWAYS use parameterized SQL
 """
     (path / "CLAUDE.md").write_text(content, encoding="utf-8")
     print(f"  {GREEN}OK{RESET}  CLAUDE.md")
 
 def write_constitution(path, a):
     (path / ".ai/spec/memory").mkdir(parents=True, exist_ok=True)
+    lang_rule = a["language"]
+    hard = a["hard_rules"].strip() if a["hard_rules"].strip() else "No hard deletes — use soft-delete (deleted_at)"
     content = f"""# Project Constitution — {a["name"]}
 
 **Version**: 1.0.0
 
 ## P1 — Data Integrity
-All data operations MUST use parameterized queries.
-Hard deletes are FORBIDDEN — use soft deletes (deleted_at).
+All DB operations MUST use parameterized queries.
+{hard}
 
-## P2 — Security First  
+## P2 — Security First
 ALL user inputs MUST be validated before processing.
 Secrets MUST live in .env — never in source code.
+Run security audit before every release.
 
 ## P3 — Code Quality
 Every function MUST do one thing only.
 Tests MUST be written BEFORE implementation (TDD).
 Coverage target: 80%+
 
-## P4 — Language
-{f'Code comments and docs in: {a["language"]}'}
+## P4 — Language & Documentation
+Comments and docs language: {lang_rule}
 
 ## P5 — Consistency
-Follow conventions in .ai/context/RULES.md at all times.
+Follow .ai/context/RULES.md at all times.
 When in doubt — ask, don't assume.
+Small targeted changes over large rewrites.
 """
     (path / ".ai/spec/memory/constitution.md").write_text(content, encoding="utf-8")
     print(f"  {GREEN}OK{RESET}  .ai/spec/memory/constitution.md")
 
-
-# ─────────────────────────────────────────────
 def main():
     print(f"\n{BOLD}{'='*50}")
     print(f"  ag_ai — Project Setup Wizard")
-    print(f"  Fills all AI context files automatically")
     print(f"{'='*50}{RESET}")
 
     project_path = get_project_path()
-    print(f"\n  {YELLOW}Project:{RESET} {project_path}")
+    print(f"\n  {YELLOW}Project folder:{RESET} {project_path}")
 
-    # Collect answers
     answers = collect_answers()
 
-    # Ensure required dirs exist
-    for d in [".ai/context", ".ai/spec/memory", ".ai/agents",
-              ".ai/sub-agents", "specs"]:
+    # Create required dirs
+    for d in [".ai/context", ".ai/spec/memory", ".ai/agents", ".ai/sub-agents", "specs"]:
         (project_path / d).mkdir(parents=True, exist_ok=True)
 
-    # Write all files
     title("Writing files...")
     write_project_md(project_path, answers)
     write_stack_md(project_path, answers)
@@ -298,35 +301,30 @@ def main():
     write_claude_md(project_path, answers)
     write_constitution(project_path, answers)
 
-    # Save answers as JSON for reference
-    answers_copy = answers.copy()
+    # Save answers for re-run
+    answers_copy = dict(answers)
     answers_copy["integrations"] = list(answers_copy["integrations"])
     (project_path / ".ai/context/wizard-answers.json").write_text(
-        json.dumps(answers_copy, ensure_ascii=False, indent=2),
-        encoding="utf-8"
+        json.dumps(answers_copy, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    print(f"  {GREEN}OK{RESET}  .ai/context/wizard-answers.json  (re-run wizard to update)")
+    print(f"  {GREEN}OK{RESET}  .ai/context/wizard-answers.json")
 
-    # Final summary
+    # Done
     tool = answers["ai_tool"].lower()
     print(f"\n{BOLD}{'='*50}")
-    print(f"  Done! {answers['name']} is configured.")
-    print(f"{'='*50}{RESET}")
+    print(f"  Done! {answers['name']} is ready.")
+    print(f"{'='*50}{RESET}\n")
 
     if "claude" in tool or "both" in tool:
-        print(f"""
-  Claude Code:
-    cd "{project_path}"
-    claude
-    /speckit.specify  I want to build [feature]
-""")
+        print(f"  Claude Code:")
+        print(f'    cd "{project_path}"')
+        print(f"    claude")
+        print(f"    /speckit.specify  I want to build [feature]\n")
     if "open" in tool or "both" in tool:
-        print(f"""
-  OpenCode:
-    cd "{project_path}"
-    opencode
-    use orchestrator agent to help me build [feature]
-""")
+        print(f"  OpenCode:")
+        print(f'    cd "{project_path}"')
+        print(f"    opencode")
+        print(f"    use orchestrator agent to help me build [feature]\n")
 
 if __name__ == "__main__":
     main()
