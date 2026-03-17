@@ -5,8 +5,10 @@ echo  ===========================
 echo.
 
 cd /d C:\temp\ag_ai
+
 echo [1/3] Pulling latest from GitHub...
-git pull
+git fetch origin
+git reset --hard origin/main
 echo.
 
 echo [2/3] Running setup...
