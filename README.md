@@ -31,9 +31,58 @@ Auto-generates **7 files** so AI knows your project immediately.
 Then open your AI tool:
 ```cmd
 cd D:\my-new-project
-opencode                          # OpenCode
-claude                            # Claude Code
+opencode          # OpenCode
+claude            # Claude Code
 ```
+
+---
+
+## 🎯 Picking an Agent Mode (OpenCode)
+
+### Option A — Launcher menu (easiest)
+```cmd
+F:\ag_ai\agent.bat
+```
+Shows a numbered menu of all 18 agents. Pick a number and OpenCode starts with that agent ready.
+
+### Option B — Direct from command line
+```cmd
+opencode --agent orchestrator       # route any complex task
+opencode --agent spec-workflow      # spec-first planning
+opencode --agent architect          # system design
+opencode --agent coder              # write and refactor code
+opencode --agent tdd-guide          # test-first development
+opencode --agent security-reviewer  # OWASP audit
+opencode --agent code-reviewer      # review code quality
+opencode --agent db-agent           # database specialist
+opencode --agent sql-helper         # generate SQL queries
+opencode --agent api-agent          # API and integrations
+opencode --agent telegram-bot       # Telegram bot specialist
+opencode --agent n8n-workflow       # n8n automation
+opencode --agent debugger           # investigate bugs
+opencode --agent test-writer        # write tests
+opencode --agent refactor-cleaner   # refactor without breaking
+opencode --agent build-error-resolver  # fix build errors
+opencode --agent doc-updater        # sync documentation
+opencode --agent database-reviewer  # review DB schema/queries
+```
+
+### Option C — From inside OpenCode (chat)
+```
+use orchestrator agent to build [feature]
+use spec-workflow agent to specify: I want to add [feature]
+use tdd-guide agent to implement [function] test-first
+use security-reviewer agent to audit [file]
+use debugger agent to investigate [bug]
+```
+
+### Built-in modes (Ctrl+M inside OpenCode)
+| Mode | Purpose |
+|------|---------|
+| `Build` | Write and edit code (default) |
+| `Plan` | Plan only, no code changes |
+| `Explore` | Read and search only |
+
 
 ---
 
@@ -41,41 +90,26 @@ claude                            # Claude Code
 
 Specs are the heart of ag_ai — write the spec first, then code.
 
-### Start a new feature spec
+### Full workflow for any feature
 ```
-# OpenCode
-use spec-workflow agent to specify: I want to add [feature description]
+# Step 1 — write the spec (WHAT to build)
+use spec-workflow agent to specify: I want to add [feature]
 
-# Claude Code
-/speckit.specify I want to add [feature description]
-```
+# Step 2 — create a plan (HOW to build it)
+use orchestrator agent to plan and manage adding [feature]
 
-### Complete a spec → plan → tasks → implement
-```
-# OpenCode (step by step)
-use spec-workflow agent to create plan for specs/my-feature/
-use spec-workflow agent to create tasks for specs/my-feature/
-use orchestrator agent to implement specs/my-feature/tasks.md
+# Step 3 — implement task by task
+use [agent] agent to implement [specific task]
 
-# Claude Code (step by step)
-/speckit.plan     tech stack: PHP + MySQL + n8n
-/speckit.tasks
-/speckit.implement
+# Step 4 — review
+use code-reviewer agent to review the changes
+use security-reviewer agent to audit [file]
 ```
 
 ### Update an existing spec
 ```
-# OpenCode
 use spec-workflow agent to update specs/my-feature/spec.md
 [describe what changed]
-
-# Claude Code
-/speckit.specify  [describe the change]
-```
-
-### Check progress on a spec
-```
-use spec-workflow agent to review progress on specs/my-feature/
 ```
 
 ### Spec folder structure
@@ -83,7 +117,7 @@ use spec-workflow agent to review progress on specs/my-feature/
 specs/
 └── my-feature/
     ├── spec.md          ← WHAT to build (requirements, user stories)
-    ├── plan.md          ← HOW to build (tech decisions, architecture)
+    ├── plan.md          ← HOW to build (tech decisions, phases)
     ├── data-model.md    ← DB schema and entities
     ├── tasks.md         ← ordered task list with phases
     └── discovery.md     ← research and findings (optional)
@@ -98,7 +132,7 @@ your-project/
 ├── AGENTS.md                  ← OpenCode reads this first
 ├── CLAUDE.md                  ← Claude Code reads this first
 ├── specs/                     ← feature specs go here
-├── .opencode/agents/          ← 18 OpenCode YAML agents
+├── .opencode/agents/          ← 18 OpenCode YAML agents (with mode field)
 ├── .claude/commands/          ← Claude Code slash commands
 └── .ai/
     ├── agents/                ← 13 markdown agent instructions
@@ -113,8 +147,8 @@ your-project/
 
 | File | Content |
 |------|---------|
-| `AGENTS.md` | Full agent routing + coding style (OpenCode reads first) |
-| `CLAUDE.md` | Agent routing + slash commands (Claude Code reads first) |
+| `AGENTS.md` | Full agent routing + coding style |
+| `CLAUDE.md` | Agent routing + slash commands |
 | `.ai/context/PROJECT.md` | Project name, description, integrations |
 | `.ai/context/STACK.md` | Backend, DB, frontend, env variables |
 | `.ai/context/RULES.md` | Coding rules + project-specific rules |
@@ -124,43 +158,23 @@ your-project/
 
 ---
 
-## 🤖 All 18 Agents
+## 💻 Claude Code Slash Commands
 
-### OpenCode — call by name
-```
-use orchestrator agent to build [feature]
-use spec-workflow agent to plan [feature]
-use coder agent to implement [function]
-use db-agent agent to design schema for [entity]
-use tdd-guide agent to implement [function] test-first
-use security-reviewer agent to audit [file or folder]
-use sql-helper agent to write a query for [description]
-use telegram-bot agent to format [message]
-use n8n-workflow agent to design workflow for [task]
-use debugger agent to investigate [bug]
-use code-reviewer agent to review [file]
-use architect agent to design [system]
-use test-writer agent to write tests for [function]
-use refactor-cleaner agent to refactor [file]
-use doc-updater agent to update docs for [change]
-```
-
-### Claude Code — slash commands
-```
-/speckit.specify     define what to build
-/speckit.plan        technical plan
-/speckit.tasks       break into tasks
-/speckit.implement   execute tasks
-/tdd                 test-first implementation
-/verify              full quality gate
-/security            OWASP audit
-/code-review         review code
-/build-fix           fix build errors
-/refactor-clean      refactor code
-/learn               extract patterns from session
-/checkpoint          save session state
-/update-docs         sync docs with code
-```
+| Command | Purpose |
+|---------|---------|
+| `/speckit.specify` | Define what to build |
+| `/speckit.plan` | Technical plan |
+| `/speckit.tasks` | Break into tasks |
+| `/speckit.implement` | Execute tasks |
+| `/tdd` | Test-first implementation |
+| `/verify` | Full quality gate |
+| `/security` | OWASP audit |
+| `/code-review` | Review code |
+| `/build-fix` | Fix build errors |
+| `/refactor-clean` | Refactor code |
+| `/learn` | Extract patterns from session |
+| `/checkpoint` | Save session state |
+| `/update-docs` | Sync docs with code |
 
 ---
 
@@ -178,6 +192,7 @@ F:\ag_ai\update.ps1       (PowerShell)
 |------|---------|
 | `install.bat / .ps1` | Install agents into a project |
 | `wizard.bat / .ps1` | Fill context files (run after install) |
+| `agent.bat` | Launch OpenCode with a specific agent |
 | `update.bat / .ps1` | Pull latest from GitHub |
 | `new-project.bat` | Create + install + wizard in one shot |
 | `setup_ai.py` | Python installer (called by install scripts) |
