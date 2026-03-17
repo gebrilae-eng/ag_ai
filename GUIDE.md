@@ -20,7 +20,7 @@ git clone https://github.com/gebrilae-eng/ag_ai.git C:\temp\ag_ai
 C:\temp\ag_ai\install.bat C:\path\to\your-project
 ```
 
-**مثال:**
+**أمثلة:**
 ```cmd
 C:\temp\ag_ai\install.bat C:\laragon\www\my-project
 C:\temp\ag_ai\install.bat C:\Users\AG\Desktop\new-app
@@ -50,43 +50,13 @@ cd C:\path\to\your-project
 claude
 ```
 
-### أول مرة في المشروع — Onboarding
+### أول مرة — Onboarding
 ```
 /onboard
 ```
-يسألك 12 سؤال ويملي كل الملفات تلقائياً:
-- `.ai/context/PROJECT.md`
-- `.ai/context/STACK.md`
-- `.ai/context/RULES.md`
-- `CLAUDE.md`
-- `.ai/spec/memory/constitution.md`
+يسألك 12 سؤال ويملي كل الملفات تلقائياً.
 
----
-
-## 5️⃣ الاستخدام مع OpenCode
-
-### افتح المشروع
-```cmd
-cd C:\path\to\your-project
-opencode
-```
-
-### أول مرة في المشروع — Onboarding
-OpenCode مفيش فيه slash commands — اكتب مباشرة:
-```
-Read CLAUDE.md then ask me the onboarding questions to fill the context files
-```
-
-### تشغيل أمر مباشر بدون TUI
-```cmd
-opencode run "Read CLAUDE.md and help me build [feature]"
-```
-
----
-
-## 6️⃣ Workflow — Feature جديدة
-
-### الطريقة الكاملة (Spec-First)
+### Workflow — Feature جديدة
 ```
 /speckit.specify    ← وصّف إيه اللي عاوز تبنيه
 /speckit.clarify    ← وضّح أي غموض (اختياري)
@@ -98,32 +68,104 @@ opencode run "Read CLAUDE.md and help me build [feature]"
 /security           ← security audit
 ```
 
-### الطريقة السريعة
-```
-/tdd                ← ابدأ مباشرة بـ TDD
-/build-fix          ← صلّح build errors
-/refactor-clean     ← نظّف الكود
-/quality-gate       ← فحص سريع
+---
+
+## 5️⃣ الاستخدام مع OpenCode
+
+### افتح المشروع
+```cmd
+cd C:\path\to\your-project
+opencode
 ```
 
-### أول مرة في مشروع جديد
+### أول مرة — Onboarding
+OpenCode مفيش فيه slash commands — اكتب مباشرة:
 ```
-/speckit.constitution  ← اعمل مبادئ المشروع (مرة واحدة)
+Read CLAUDE.md then ask me the onboarding questions to fill the context files
+```
+
+### تفعيل الـ Agents في OpenCode
+
+**الطريقة الأولى — من داخل الـ TUI:**
+```
+use orchestrator agent to help me build [feature description]
+use tdd-guide agent to implement [function name]
+use security-reviewer agent to audit [file path]
+use sql-helper agent to write a query for [description]
+use debugger agent to investigate [bug description]
+```
+
+**الطريقة التانية — من command line مباشرة:**
+```cmd
+opencode --agent orchestrator "build a daily sales Telegram report"
+opencode --agent tdd-guide "implement calculateProfit function"
+opencode --agent security-reviewer "audit controllers/SaleController.php"
+opencode --agent sql-helper "top 10 selling drugs this month"
+opencode --agent debugger "Telegram bot stops sending after 5 messages"
+```
+
+**الطريقة التالتة — run بدون TUI:**
+```cmd
+opencode run --agent coder "add pagination to the drugs list API"
 ```
 
 ---
 
-## 7️⃣ Slash Commands — مرجع كامل
+## 6️⃣ الـ Agents المتاحة
+
+### Claude Code — `.ai/agents/`
+| Agent | الاستدعاء | الدور |
+|-------|-----------|-------|
+| orchestrator | تلقائي عبر CLAUDE.md | يوزّع المهام |
+| coder | تلقائي | كتابة الكود |
+| db-agent | تلقائي | قواعد البيانات |
+| api-agent | تلقائي | API والـ integrations |
+| spec-workflow | `/speckit.*` | Spec-Driven workflow |
+| ecc/architect | تلقائي | تصميم النظام |
+| ecc/tdd-guide | `/tdd` | test-first |
+| ecc/security-reviewer | `/security` | OWASP audit |
+| ecc/code-reviewer | `/code-review` | مراجعة الكود |
+| ecc/refactor-cleaner | `/refactor-clean` | تنظيف الكود |
+| ecc/build-error-resolver | `/build-fix` | إصلاح build errors |
+| ecc/database-reviewer | تلقائي | مراجعة DB |
+| ecc/doc-updater | `/update-docs` | تحديث docs |
+
+### OpenCode — `.opencode/agents/`
+| Agent | الاستدعاء | الدور |
+|-------|-----------|-------|
+| orchestrator | `use orchestrator agent` | يوزّع المهام |
+| architect | `use architect agent` | تصميم النظام (Opus) |
+| coder | `use coder agent` | كتابة الكود |
+| db-agent | `use db-agent agent` | قواعد البيانات |
+| tdd-guide | `use tdd-guide agent` | test-first |
+| security-reviewer | `use security-reviewer agent` | OWASP audit |
+| sql-helper | `use sql-helper agent` | SQL queries |
+| telegram-bot | `use telegram-bot agent` | Telegram |
+| n8n-workflow | `use n8n-workflow agent` | n8n automation |
+| debugger | `use debugger agent` | debugging |
+
+### Sub-Agents المشتركة — `.ai/sub-agents/`
+| Agent | الدور |
+|-------|-------|
+| sql-helper | توليد MySQL queries |
+| telegram-bot | HTML formatting + splitting |
+| n8n-workflow | n8n automation patterns |
+| debugger | تحقيق منهجي في الـ bugs |
+| test-writer | كتابة PHPUnit/Jest tests |
+
+---
+
+## 7️⃣ Slash Commands — مرجع كامل (Claude Code)
 
 ### Spec Kit — التخطيط
 | Command | الوظيفة |
 |---------|---------|
-| `/speckit.constitution` | مبادئ المشروع |
+| `/speckit.constitution` | مبادئ المشروع (مرة واحدة) |
 | `/speckit.specify` | تعريف الـ feature |
 | `/speckit.clarify` | توضيح المتطلبات |
 | `/speckit.plan` | خطة التنفيذ التقنية |
-| `/speckit.tasks` | تقسيم لـ tasks |
-| `/speckit.implement` | تنفيذ الـ tasks |
+| `/speckit.tasks` | تقسيم لـ tasks منظمة |
+| `/speckit.implement` | تنفيذ الـ tasks بالترتيب |
 | `/speckit.analyze` | فحص التناسق |
 
 ### ECC — جودة الكود
@@ -147,46 +189,31 @@ opencode run "Read CLAUDE.md and help me build [feature]"
 
 ---
 
-## 8️⃣ الـ Agents المتاحة
-
-### Agents رئيسية
-| الملف | الدور |
-|-------|-------|
-| `orchestrator.md` | يوزّع المهام على الـ agents |
-| `coder.md` | يكتب الكود |
-| `db-agent.md` | متخصص قواعد البيانات |
-| `api-agent.md` | API والـ integrations |
-| `spec-workflow.md` | يربط Spec Kit بالـ agents |
-
-### ECC Agents
-| الملف | الدور |
-|-------|-------|
-| `ecc/architect.md` | تصميم النظام (يشتغل على Opus) |
-| `ecc/tdd-guide.md` | test-first development |
-| `ecc/security-reviewer.md` | OWASP Top 10 audit |
-| `ecc/code-reviewer.md` | مراجعة جودة الكود |
-| `ecc/refactor-cleaner.md` | تنظيف الكود |
-| `ecc/build-error-resolver.md` | إصلاح build errors |
-| `ecc/database-reviewer.md` | مراجعة الـ DB |
-| `ecc/doc-updater.md` | تحديث الـ docs |
-
-### Sub-Agents
-| الملف | الدور |
-|-------|-------|
-| `sql-helper.md` | توليد SQL queries |
-| `telegram-bot.md` | Telegram HTML formatting |
-| `n8n-workflow.md` | n8n automation |
-| `debugger.md` | تحقيق منهجي في الـ bugs |
-| `test-writer.md` | كتابة الـ tests |
-
----
-
-## 9️⃣ بنية الملفات بعد التثبيت
+## 8️⃣ بنية الملفات بعد التثبيت
 
 ```
 your-project/
-├── CLAUDE.md                    ← entry point للـ AI
-├── specs/                       ← specs الـ features
+├── CLAUDE.md                        ← entry point للـ AI
+├── specs/                           ← specs الـ features
+├── .claude/
+│   └── commands/                    ← Claude Code slash commands
+│       ├── onboard.md
+│       ├── tdd.md
+│       ├── verify.md
+│       ├── security.md
+│       └── ...
+├── .opencode/
+│   └── agents/                      ← OpenCode YAML agents
+│       ├── orchestrator.yml
+│       ├── architect.yml
+│       ├── coder.yml
+│       ├── db-agent.yml
+│       ├── tdd-guide.yml
+│       ├── security-reviewer.yml
+│       ├── sql-helper.yml
+│       ├── telegram-bot.yml
+│       ├── n8n-workflow.yml
+│       └── debugger.yml
 └── .ai/
     ├── agents/
     │   ├── orchestrator.md
@@ -194,30 +221,31 @@ your-project/
     │   ├── db-agent.md
     │   ├── api-agent.md
     │   ├── spec-workflow.md
-    │   └── ecc/                 ← 8 ECC agents
-    ├── sub-agents/              ← 5 specialists
+    │   └── ecc/                     ← 8 ECC agents
+    ├── sub-agents/                  ← 5 specialists
     ├── rules/
-    │   ├── php/                 ← security, patterns, testing
-    │   └── common/              ← security, coding-style
+    │   ├── php/                     ← security, patterns, testing
+    │   └── common/                  ← security, coding-style
     ├── context/
-    │   ├── PROJECT.md           ← يتملى بـ /onboard
-    │   ├── STACK.md             ← يتملى بـ /onboard
-    │   └── RULES.md             ← يتملى بـ /onboard
+    │   ├── PROJECT.md               ← يتملى بـ /onboard
+    │   ├── STACK.md                 ← يتملى بـ /onboard
+    │   └── RULES.md                 ← يتملى بـ /onboard
     └── spec/
-        ├── commands/            ← /speckit.* commands
-        ├── templates/           ← spec/plan/tasks/constitution
+        ├── commands/                ← /speckit.* commands
+        ├── templates/               ← spec/plan/tasks/constitution
         └── memory/
-            └── constitution.md  ← يتملى بـ /onboard
+            └── constitution.md      ← يتملى بـ /onboard
 ```
 
 ---
 
-## 🔟 نصائح عملية
+## 9️⃣ نصائح عملية
 
-**افتح Claude Code من داخل المشروع دايماً:**
+**افتح Claude Code أو OpenCode من داخل المشروع دايماً:**
 ```cmd
 cd C:\path\to\your-project
-claude
+claude        ← Claude Code
+opencode      ← OpenCode
 ```
 
 **لو عندك مشروع موجود وعاوز تبدأ spec-first:**
@@ -227,7 +255,7 @@ claude
 
 **لو عاوز تقفز للكود مباشرة:**
 ```
-/tdd [وصف الـ function اللي عاوز تعملها]
+/tdd [وصف الـ function]
 ```
 
 **لو الـ build بيفشل:**
@@ -235,9 +263,45 @@ claude
 /build-fix
 ```
 
-**لو عاوز تعمل security review على ملف:**
+**لو عاوز security review على ملف:**
 ```
-/security [path/to/file.php]
+/security path/to/file.php
+```
+
+**في OpenCode — لو مش عارف تبدأ:**
+```
+use orchestrator agent — I want to [describe what you need]
+```
+
+---
+
+## 🔟 أمثلة عملية
+
+### مثال ١ — Feature جديدة (Claude Code)
+```
+/speckit.specify أريد تقرير يومي على Telegram يعرض المبيعات والأرباح
+/speckit.plan PHP + MySQL, n8n workflow, Telegram HTML
+/speckit.tasks
+/tdd
+/verify
+```
+
+### مثال ٢ — Feature جديدة (OpenCode)
+```
+use orchestrator agent to help me build a daily Telegram sales report
+using PHP, MySQL, and n8n workflow
+```
+
+### مثال ٣ — إصلاح bug
+```
+/build-fix                               ← Claude Code
+use debugger agent — [وصف المشكلة]      ← OpenCode
+```
+
+### مثال ٤ — Security audit
+```
+/security                                ← Claude Code
+use security-reviewer agent to audit the entire controllers/ folder
 ```
 
 ---
