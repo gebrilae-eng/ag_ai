@@ -14,13 +14,11 @@ cd /d "%AG_AI_DIR%"
 
 echo Fetching latest from GitHub...
 git fetch origin
-
-echo Resetting to latest...
 git reset --hard origin/main
-
+git checkout HEAD -- .
 echo.
+
 echo Done! ag_ai is now up to date.
 echo.
 pause
-
 endlocal

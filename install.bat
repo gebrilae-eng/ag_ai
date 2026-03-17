@@ -17,16 +17,11 @@ cd /d "%AG_AI_DIR%"
 echo [1/3] Pulling latest from GitHub...
 git fetch origin
 git reset --hard origin/main
-
-if errorlevel 1 (
-    echo  ERROR: git failed. Make sure you have internet connection.
-    pause
-    exit /b 1
-)
+git checkout HEAD -- .
 echo.
 
 echo [2/3] Running setup...
-if "%1"=="" (
+if "%~1"=="" (
     python "%AG_AI_DIR%\setup_ai.py"
 ) else (
     python "%AG_AI_DIR%\setup_ai.py" "%~1"
@@ -35,5 +30,4 @@ if "%1"=="" (
 echo.
 echo [3/3] Done!
 pause
-
 endlocal

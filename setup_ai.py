@@ -10,11 +10,9 @@ import sys
 import shutil
 from pathlib import Path
 
-# Fix Windows console encoding
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stdin.reconfigure(encoding="utf-8", errors="replace")
-    os.environ["PYTHONIOENCODING"] = "utf-8"
 
 SCRIPT_DIR = Path(__file__).parent.resolve()
 
@@ -39,25 +37,21 @@ def ask_yes(question, default=True):
         ans = input(f"  ? {question} {hint}: ").strip().lower()
     except (EOFError, UnicodeDecodeError):
         return default
-    if ans == "":
-        return default
-    return ans in ("y", "yes")
+    return default if ans == "" else ans in ("y", "yes")
 
 def ask_choice(question, options):
     print(f"\n  ? {question}")
-    print(f"  {'─' * 48}")
+    print(f"  {'─' * 50}")
     for i, (label, desc) in enumerate(options, 1):
         print(f"  {BOLD}{i}{RESET}) {label:<22} {DIM}{desc}{RESET}")
-    print(f"  {BOLD}0{RESET}) All (install everything)")
+    print(f"  {BOLD}0{RESET}) All  {DIM}(install everything){RESET}")
     print()
     try:
-        raw = input("  Select numbers separated by spaces (e.g. 1 3 4): ").strip()
+        raw = input("  Select numbers (e.g. 1 3 4) or 0 for all: ").strip()
     except (EOFError, UnicodeDecodeError):
-        raw = ""
-
+        raw = "0"
     if raw == "0" or raw == "":
         return list(range(len(options)))
-
     selected = []
     for x in raw.split():
         try:
@@ -74,9 +68,18 @@ def get_target():
     else:
         raw = input("  Project path (Enter = current dir): ").strip()
         p = Path(raw).resolve() if raw else Path.cwd()
+
     if not p.exists():
         err(f"Path not found: {p}")
         sys.exit(1)
+
+    # Prevent installing INTO ag_ai folder itself
+    if p.resolve() == SCRIPT_DIR.resolve():
+        err("Cannot install ag_ai into itself!")
+        err(f"Target must be a different project folder.")
+        err(f"Example: python setup_ai.py C:\\laragon\\www\\my-project")
+        sys.exit(1)
+
     return p
 
 def copy_item(src, dest, label):
@@ -125,24 +128,24 @@ def main():
     target = get_target()
     info(f"Target project: {target}")
 
-    # ── Question 1: AI Tool ────────────────────────────────────
+    # Question 1: AI Tool
     tool_options = [
-        ("Claude Code",   "slash commands: /tdd  /security  /speckit.*"),
-        ("OpenCode",      "YAML agents: use orchestrator agent to ..."),
-        ("Both",          "install Claude Code + OpenCode support"),
+        ("Claude Code",  "slash commands: /tdd  /security  /speckit.*"),
+        ("OpenCode",     "YAML agents: use orchestrator agent to ..."),
+        ("Both",         "install Claude Code + OpenCode support"),
     ]
     tool_idx = ask_choice("Which AI tool do you use?", tool_options)
     use_claude   = (0 in tool_idx or 2 in tool_idx)
     use_opencode = (1 in tool_idx or 2 in tool_idx)
 
-    # ── Question 2: Components ─────────────────────────────────
+    # Question 2: Components
     comp_options = [
-        ("Core Agents",    "orchestrator, coder, db-agent, api-agent (always recommended)"),
-        ("ECC Agents",     "architect, tdd-guide, security-reviewer, code-reviewer"),
-        ("Sub-Agents",     "sql-helper, telegram-bot, n8n-workflow, debugger, test-writer"),
-        ("PHP Rules",      "security + patterns + testing (auto-apply to .php files)"),
-        ("Common Rules",   "security + coding-style (universal rules)"),
-        ("Spec Kit",       "speckit.* commands + spec/plan/tasks templates"),
+        ("Core Agents",   "orchestrator, coder, db-agent, api-agent"),
+        ("ECC Agents",    "architect, tdd-guide, security-reviewer, code-reviewer"),
+        ("Sub-Agents",    "sql-helper, telegram-bot, n8n-workflow, debugger"),
+        ("PHP Rules",     "security + patterns + testing"),
+        ("Common Rules",  "security + coding-style"),
+        ("Spec Kit",      "speckit.* commands + spec/plan/tasks templates"),
     ]
     comp_idx = ask_choice("Which components to install?", comp_options)
 
@@ -152,61 +155,52 @@ def main():
     install_common  = (4 in comp_idx)
     install_speckit = (5 in comp_idx)
 
-    # ── Install ────────────────────────────────────────────────
+    # Install
     header("Installing...")
     results = []
 
-    # CLAUDE.md
     r = copy_item(SCRIPT_DIR / "CLAUDE.md", target / "CLAUDE.md", "CLAUDE.md")
     results.append(("CLAUDE.md", r))
 
-    # .ai/ folder
-    ai_src = SCRIPT_DIR / ".ai"
     ai_dest = target / ".ai"
+    ai_src  = SCRIPT_DIR / ".ai"
     if ai_src.exists():
         if ai_dest.exists():
             if ask_yes(".ai/ folder exists. Overwrite?", default=True):
                 shutil.rmtree(ai_dest)
                 shutil.copytree(ai_src, ai_dest)
-                ok("Installed: .ai/ (agents + rules + context)")
+                ok("Installed: .ai/")
                 results.append((".ai/", True))
             else:
                 warn("Skipped: .ai/")
                 results.append((".ai/", False))
         else:
             shutil.copytree(ai_src, ai_dest)
-            ok("Installed: .ai/ (agents + rules + context)")
+            ok("Installed: .ai/")
             results.append((".ai/", True))
 
-    # Claude Code commands
     if use_claude:
         r = copy_item(SCRIPT_DIR / ".claude", target / ".claude", ".claude/ (slash commands)")
         results.append((".claude/", r))
 
-    # OpenCode agents
     if use_opencode:
         r = copy_item(SCRIPT_DIR / ".opencode", target / ".opencode", ".opencode/ (OpenCode agents)")
         results.append((".opencode/", r))
 
     # Remove unselected components
     ai_path = target / ".ai"
-
     if not install_ecc and (ai_path / "agents" / "ecc").exists():
         shutil.rmtree(ai_path / "agents" / "ecc")
         warn("Skipped: ECC agents")
-
     if not install_sub and (ai_path / "sub-agents").exists():
         shutil.rmtree(ai_path / "sub-agents")
         warn("Skipped: sub-agents")
-
     if not install_php and (ai_path / "rules" / "php").exists():
         shutil.rmtree(ai_path / "rules" / "php")
         warn("Skipped: PHP rules")
-
     if not install_common and (ai_path / "rules" / "common").exists():
         shutil.rmtree(ai_path / "rules" / "common")
         warn("Skipped: common rules")
-
     if not install_speckit and (ai_path / "spec").exists():
         shutil.rmtree(ai_path / "spec")
         warn("Skipped: Spec Kit")
@@ -214,7 +208,7 @@ def main():
     make_dirs(target, use_opencode=use_opencode, use_speckit=install_speckit)
     update_gitignore(target)
 
-    # ── Summary ────────────────────────────────────────────────
+    # Summary
     header("Installed:")
     for label, status in results:
         icon = f"{GREEN}OK{RESET}" if status else f"{YELLOW}--{RESET}"
@@ -226,9 +220,9 @@ def main():
 
     header("Next Steps:")
     if use_claude:
-        print(f"  Claude Code:  cd project && claude  →  /onboard")
+        print(f"  Claude Code:  cd project && claude  then  /onboard")
     if use_opencode:
-        print(f"  OpenCode:     cd project && opencode  →  use orchestrator agent to ...")
+        print(f"  OpenCode:     cd project && opencode  then  use orchestrator agent")
 
     parts = [f"{md_count} MD files"]
     if oc_count:
