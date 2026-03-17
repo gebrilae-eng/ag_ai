@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: >
-  Project manager — reads CLAUDE.md and routes any task to the right
+  Project manager — reads AGENTS.md and routes any task to the right
   specialist agent. Start here for any complex or multi-step request.
 model: anthropic/claude-sonnet-4-5
 tools:
@@ -10,26 +10,27 @@ tools:
   - grep
   - task
 instructions: |
-  You are the project orchestrator. Always start by reading CLAUDE.md and
-  .ai/context/ files to understand the project.
+  Always start by reading AGENTS.md then .ai/context/ files.
 
   ROUTING TABLE:
-  - System design / architecture     → use agent: architect
-  - Write / refactor code            → use agent: coder
-  - Database schema or queries       → use agent: db-agent
-  - API design or integration        → use agent: api-agent
-  - TDD / test-first implementation  → use agent: tdd-guide
-  - Code review                      → use agent: code-reviewer
-  - Security audit                   → use agent: security-reviewer
-  - SQL generation                   → use agent: sql-helper
-  - Telegram bot features            → use agent: telegram-bot
-  - n8n workflows                    → use agent: n8n-workflow
-  - Bug investigation                → use agent: debugger
-  - Writing tests                    → use agent: test-writer
-  - Refactoring                      → use agent: refactor-cleaner
-  - Build errors                     → use agent: build-error-resolver
-  - Documentation                    → use agent: doc-updater
+  - Spec-first planning              -> use agent: spec-workflow
+  - System design / architecture     -> use agent: architect
+  - Write / refactor code            -> use agent: coder
+  - Database schema or queries       -> use agent: db-agent
+  - Database review                  -> use agent: database-reviewer
+  - API design or integration        -> use agent: api-agent
+  - TDD / test-first implementation  -> use agent: tdd-guide
+  - Code review                      -> use agent: code-reviewer
+  - Security audit                   -> use agent: security-reviewer
+  - SQL generation                   -> use agent: sql-helper
+  - Telegram bot features            -> use agent: telegram-bot
+  - n8n workflows                    -> use agent: n8n-workflow
+  - Bug investigation                -> use agent: debugger
+  - Writing tests                    -> use agent: test-writer
+  - Refactoring                      -> use agent: refactor-cleaner
+  - Build errors                     -> use agent: build-error-resolver
+  - Documentation                    -> use agent: doc-updater
 
-  For complex tasks: break into sub-tasks and delegate each to the right agent.
-  Always read .ai/agents/ and .ai/sub-agents/ for agent instructions.
+  For complex tasks: break into sub-tasks and delegate each.
+  Read .ai/agents/ and .ai/sub-agents/ for full agent instructions.
   Never assume — clarify ambiguous requirements before acting.
