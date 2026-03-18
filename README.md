@@ -14,36 +14,47 @@ git clone https://github.com/gebrilae-eng/ag_ai.git C:\ag_ai
 C:\ag_ai\run.bat
 ```
 
-Or directly:
-```cmd
-C:\ag_ai\install.bat D:\my-project
-C:\ag_ai\wizard.bat  D:\my-project
-```
-
 ---
 
-## Scripts
+## Scripts (root — 8 files only)
 
-### Main entry point
+| File | Purpose |
+|------|---------|
+| `run.bat` | **Main entry point** — menu for all operations |
+| `agent.bat` | Launch OpenCode with agent selector menu |
+| `setup_ai.py` | Installer engine (called by run.bat) |
+| `wizard.py` | Context file generator (called by run.bat) |
+| `validate.py` | Setup checker (called by run.bat) |
+| `CLAUDE.md` | Claude Code entry point template |
+| `README.md` | This file |
+| `CHANGELOG.md` | Version history |
+
+### run.bat — menu mode
 ```cmd
 C:\ag_ai\run.bat
 ```
-Shows a menu: new-project / install / wizard / validate / update / update-project / agent
+```
+1) new-project    create + install + wizard
+2) install        install agents into a project
+3) wizard         fill context files
+4) validate       check project setup
+5) update         update ag_ai from GitHub
+6) update-project update agents (keep context)
+7) agent          launch OpenCode with agent menu
+```
 
-### Individual scripts
-| Script | Purpose |
-|--------|---------|
-| `install.bat / .ps1` | Install agents into a project |
-| `wizard.bat / .ps1` | Fill context files interactively |
-| `update.bat / .ps1` | Pull latest ag_ai from GitHub |
-| `update-project.bat` | Update agents only, keep context |
-| `validate.bat` | Check setup completeness |
-| `agent.bat / .ps1` | Launch OpenCode with agent menu |
-| `new-project.bat` | Create + install + wizard in one shot |
+### run.bat — direct mode
+```cmd
+C:\ag_ai\run.bat install        D:\my-project
+C:\ag_ai\run.bat wizard         D:\my-project
+C:\ag_ai\run.bat validate       D:\my-project
+C:\ag_ai\run.bat update-project D:\my-project
+C:\ag_ai\run.bat agent
+```
 
 ### Python flags
 ```cmd
-python setup_ai.py D:\my-project --dry-run        :: preview changes
+python setup_ai.py D:\my-project --dry-run        :: preview
 python setup_ai.py D:\my-project --update-agents  :: agents only
 ```
 
@@ -51,8 +62,7 @@ python setup_ai.py D:\my-project --update-agents  :: agents only
 
 ## Global OpenCode Config
 
-Copy once to get all 18 agents available in every project:
-
+Copy once to get all 18 agents in every project:
 ```cmd
 copy C:\ag_ai\.config\opencode\opencode.json ^
      C:\Users\%USERNAME%\.config\opencode\opencode.json
@@ -121,13 +131,13 @@ Or use the menu: `C:\ag_ai\agent.bat`
 
 ---
 
-## Project File Structure (after install + wizard)
+## Project Structure (after install)
 
 ```
 your-project/
 ├── AGENTS.md                    ← OpenCode reads first
 ├── CLAUDE.md                    ← Claude Code reads first
-├── specs/                       ← feature specs per branch
+├── specs/                       ← feature specs
 ├── .opencode/agents/            ← 18 YAML agent configs
 ├── .claude/commands/            ← Claude Code slash commands
 └── .ai/
@@ -144,27 +154,22 @@ your-project/
 
 ---
 
-## Repo File Structure
+## Repo Structure
 
 ```
 ag_ai/
-├── run.bat                      ← main entry point (menu)
-├── install.bat / .ps1
-├── wizard.bat / .ps1 + wizard.py
-├── update.bat / .ps1
-├── update-project.bat
-├── validate.bat + validate.py
-├── new-project.bat
-├── agent.bat / .ps1
-├── setup_ai.py                  ← installer engine
-├── .ai/                         ← installed into projects
-├── .opencode/agents/            ← 18 YAML agent configs
-├── .claude/commands/            ← slash commands
-├── .config/opencode/
-│   └── opencode.json            ← global OpenCode config
-├── CLAUDE.md                    ← entry point template
+├── run.bat           ← single entry point
+├── agent.bat         ← OpenCode agent launcher
+├── setup_ai.py       ← installer engine
+├── wizard.py         ← context file generator
+├── validate.py       ← setup checker
+├── CLAUDE.md         ← entry point template
+├── README.md
 ├── CHANGELOG.md
-└── README.md
+├── .ai/              ← installed into projects
+├── .opencode/agents/ ← 18 YAML configs
+├── .claude/commands/ ← slash commands
+└── .config/opencode/ ← global OpenCode config
 ```
 
 ---
