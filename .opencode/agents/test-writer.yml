@@ -3,7 +3,6 @@ name: test-writer
 description: >
   Test writing specialist - unit, integration, and E2E tests with
   strong edge-case coverage. Follows TDD order: test first, then code.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

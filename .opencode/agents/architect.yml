@@ -3,7 +3,6 @@ name: architect
 description: >
   Software architect - system design, trade-off analysis, component
   relationships, scalability, and architectural decisions.
-model: anthropic/claude-opus-4-6
 mode: primary
 tools:
   - read

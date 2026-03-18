@@ -4,7 +4,6 @@ description: >
   Project manager and task router. Reads context, breaks down complex
   requests, delegates every task to the right specialist agent.
   NEVER writes code or executes tasks directly - only plans and delegates.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

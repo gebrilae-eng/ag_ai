@@ -3,7 +3,6 @@ name: database-reviewer
 description: >
   Database review specialist - schema quality, query safety, migration
   safety, indexing strategy, and data integrity.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

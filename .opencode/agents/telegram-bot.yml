@@ -3,7 +3,6 @@ name: telegram-bot
 description: >
   Telegram bot specialist - HTML formatting, Arabic RTL messages,
   message splitting, keyboard layouts, and bot command design.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

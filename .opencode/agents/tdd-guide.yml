@@ -3,7 +3,6 @@ name: tdd-guide
 description: >
   TDD specialist - enforces Red->Green->Refactor. Writes the test first,
   then minimal implementation. Full access to run tests.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

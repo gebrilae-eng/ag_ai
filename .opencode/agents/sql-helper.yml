@@ -3,7 +3,6 @@ name: sql-helper
 description: >
   MySQL query specialist - generates optimized, parameterized queries
   for any data need. Sales, inventory, analytics, and more.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

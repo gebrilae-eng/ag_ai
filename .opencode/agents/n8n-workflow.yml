@@ -3,7 +3,6 @@ name: n8n-workflow
 description: >
   n8n automation specialist - workflow design, node configuration,
   JavaScript code nodes, error handling, and MCP tool usage.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

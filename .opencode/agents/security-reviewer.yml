@@ -3,7 +3,6 @@ name: security-reviewer
 description: >
   Security specialist - OWASP Top 10 audit, secrets detection,
   SQL injection, XSS, broken auth. Full access to scan and fix.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

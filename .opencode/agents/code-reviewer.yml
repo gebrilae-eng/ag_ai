@@ -3,7 +3,6 @@ name: code-reviewer
 description: >
   Code quality reviewer - correctness, security, performance,
   maintainability, and style compliance. Full codebase read access.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

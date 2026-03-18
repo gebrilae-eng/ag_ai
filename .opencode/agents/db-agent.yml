@@ -3,7 +3,6 @@ name: db-agent
 description: >
   Database specialist - MySQL schema design, query optimization,
   migrations, indexes, and data integrity. Full read/write/execute access.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

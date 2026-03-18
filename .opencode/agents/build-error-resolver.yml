@@ -3,7 +3,6 @@ name: build-error-resolver
 description: >
   Build and runtime error specialist - diagnoses syntax, dependency,
   config, and startup failures. Minimal targeted fixes only.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

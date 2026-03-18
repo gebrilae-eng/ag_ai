@@ -3,7 +3,6 @@ name: debugger
 description: >
   Systematic bug investigator - reproduce, isolate, hypothesize,
   fix, verify. Never guesses. Full access to read, run, and fix.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

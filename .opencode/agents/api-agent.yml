@@ -3,7 +3,6 @@ name: api-agent
 description: >
   API and integration specialist - REST endpoints, webhooks, third-party
   integrations, request/response design. Full read/write/execute access.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read

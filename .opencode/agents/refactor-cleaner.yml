@@ -3,7 +3,6 @@ name: refactor-cleaner
 description: >
   Refactoring specialist - improves code structure without changing
   behavior. Removes duplication, extracts functions, renames for clarity.
-model: anthropic/claude-sonnet-4-6
 mode: primary
 tools:
   - read
