@@ -16,7 +16,7 @@ C:\ag_ai\run.bat
 
 ---
 
-## Scripts (root — 8 files only)
+## Scripts (root — 9 files)
 
 | File | Purpose |
 |------|---------|
@@ -25,6 +25,7 @@ C:\ag_ai\run.bat
 | `setup_ai.py` | Installer engine (called by run.bat) |
 | `wizard.py` | Context file generator (called by run.bat) |
 | `validate.py` | Setup checker (called by run.bat) |
+| `prd.py` | PRD auto-generator from wizard answers |
 | `CLAUDE.md` | Claude Code entry point template |
 | `README.md` | This file |
 | `CHANGELOG.md` | Version history |
@@ -34,13 +35,14 @@ C:\ag_ai\run.bat
 C:\ag_ai\run.bat
 ```
 ```
-1) new-project    create + install + wizard
+1) new-project    create + install + wizard + PRD
 2) install        install agents into a project
 3) wizard         fill context files
 4) validate       check project setup
-5) update         update ag_ai from GitHub
-6) update-project update agents (keep context)
-7) agent          launch OpenCode with agent menu
+5) prd            generate/update PRD.md
+6) update         update ag_ai from GitHub
+7) update-project update agents (keep context)
+8) agent          launch OpenCode with agent menu
 ```
 
 ### run.bat — direct mode
@@ -48,6 +50,7 @@ C:\ag_ai\run.bat
 C:\ag_ai\run.bat install        D:\my-project
 C:\ag_ai\run.bat wizard         D:\my-project
 C:\ag_ai\run.bat validate       D:\my-project
+C:\ag_ai\run.bat prd            D:\my-project
 C:\ag_ai\run.bat update-project D:\my-project
 C:\ag_ai\run.bat agent
 ```
@@ -163,6 +166,7 @@ ag_ai/
 ├── setup_ai.py       ← installer engine
 ├── wizard.py         ← context file generator
 ├── validate.py       ← setup checker
+├── prd.py            ← PRD auto-generator
 ├── CLAUDE.md         ← entry point template
 ├── README.md
 ├── CHANGELOG.md
@@ -178,6 +182,7 @@ ag_ai/
 
 | Command | Purpose |
 |---------|---------|
+| `/onboard` | Interactive wizard to fill context files |
 | `/speckit.specify` | New feature spec |
 | `/speckit.clarify` | Resolve ambiguities |
 | `/speckit.plan` | Technical plan |
@@ -190,6 +195,27 @@ ag_ai/
 | `/build-fix` | Fix errors |
 | `/refactor-clean` | Refactor |
 | `/update-docs` | Sync docs |
+
+---
+
+## PRD Auto-Generation & Reading Chain
+
+Every project should have a **Product Requirements Document (PRD.md)**. 
+Run the wizard to automatically generate context files and the PRD, or run `prd.py` directly:
+
+```cmd
+C:\ag_ai\run.bat wizard         :: Creates context + PRD
+C:\ag_ai\run.bat prd            :: Regenerates PRD
+```
+
+### Standard Reading Chain
+
+All agents are configured to read project context in this explicit order:
+1. `PRD.md` (Product Overview & Features)
+2. `AGENTS.md` (Agent Routing & Rules)
+3. `.ai/context/STACK.md` (Tech Stack)
+4. `.ai/context/RULES.md` (Project Rules)
+5. `.ai/spec/memory/constitution.md` (Project Principles)
 
 ---
 

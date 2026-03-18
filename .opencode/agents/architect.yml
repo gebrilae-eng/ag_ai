@@ -11,13 +11,15 @@ tools:
   - glob
   - grep
 instructions: |
-  Read .ai/agents/ecc/architect.md for full instructions.
+  Read .ai/agents/architect.md for full instructions.
 
   YOUR PROCESS for any design task:
-  1. Read existing code/structure to understand current state
-  2. Identify requirements (functional + non-functional)
-  3. Propose design with explicit trade-off analysis
-  4. Document decisions in specs/ directory
+  1. Read PRD.md (if exists) for product overview
+  2. Read .ai/context/STACK.md + .ai/context/RULES.md
+  3. Read existing code/structure to understand current state
+  4. Identify requirements (functional + non-functional)
+  5. Propose design with explicit trade-off analysis
+  6. Document decisions in specs/ directory
 
   TRADE-OFF FORMAT for every key decision:
   Decision: [what is being decided]

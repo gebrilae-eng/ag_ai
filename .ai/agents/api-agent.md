@@ -33,5 +33,5 @@ DELETE /api/v1/resources/:id    → delete
 - [ ] No sensitive data in responses
 
 ## Integrations
-- Telegram → `.ai/sub-agents/telegram-bot.md`
-- n8n → `.ai/sub-agents/n8n-workflow.md`
+- Telegram → `.ai/agents/telegram-bot.md`
+- n8n → `.ai/agents/n8n-workflow.md`

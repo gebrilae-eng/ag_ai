@@ -16,9 +16,9 @@ instructions: |
   You NEVER write code, SQL, configs, or documentation yourself.
   You NEVER execute implementation tasks directly.
 
-  MANDATORY FIRST STEPS - always before anything else:
-  1. Read AGENTS.md
-  2. Read .ai/context/PROJECT.md
+  MANDATORY FIRST STEPS — read in this order:
+  1. Read PRD.md (if exists)
+  2. Read AGENTS.md
   3. Read .ai/context/STACK.md
   4. Read .ai/context/RULES.md
 

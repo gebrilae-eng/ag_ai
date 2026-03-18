@@ -39,6 +39,10 @@ REQUIRED_FILES = {
     ".ai/spec/memory/constitution.md": "Project principles",
 }
 
+OPTIONAL_FILES = {
+    "PRD.md": "Product Requirements Document (run: python prd.py [path])",
+}
+
 REQUIRED_AGENTS = [
     ".opencode/agents/orchestrator.yml",
     ".opencode/agents/coder.yml",
@@ -102,6 +106,14 @@ def main():
                 issues += 1
             else:
                 ok(f"{rel}")
+
+    # 1b. Optional but recommended files
+    for rel, desc in OPTIONAL_FILES.items():
+        fp = project_path / rel
+        if not fp.exists():
+            warn(f"{rel} - missing ({desc})")
+        else:
+            ok(f"{rel}")
 
     # 2. OpenCode agents
     print(f"\n{BOLD}  OpenCode agents{RESET}")

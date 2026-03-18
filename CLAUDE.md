@@ -1,6 +1,10 @@
 # AI Instructions
 
-> Read `AGENTS.md` and `.ai/context/` first.
+> **Reading Chain** — read in this order:
+> 1. `PRD.md` (product overview)
+> 2. `AGENTS.md` (agent routing)
+> 3. `.ai/context/STACK.md` (tech stack)
+> 4. `.ai/context/RULES.md` (coding rules)
 
 ## Agent Routing
 | Task | Agent |
@@ -27,12 +31,23 @@
 ## Key Files
 | File | Purpose |
 |------|---------|
-| `.ai/agents/*.md` | All agent instructions (18 agents) |
+| `PRD.md` | Product requirements (auto-generated) |
+| `AGENTS.md` | Agent routing + non-negotiable rules |
+| `.ai/agents/*.md` | 18 agent instruction files |
 | `.ai/rules/common.md` | Universal coding style + security |
 | `.ai/rules/php.md` | PHP architecture + security + testing |
 | `.ai/spec/commands.md` | All speckit commands reference |
-| `.ai/spec/templates/` | Spec, plan, tasks templates |
+| `.ai/spec/templates/` | Spec, plan, tasks, PRD templates |
 | `.ai/context/` | PROJECT.md, STACK.md, RULES.md |
+
+## Spec Workflow
+```
+/speckit.specify  → new feature spec (WHAT)
+/speckit.clarify  → resolve ambiguities
+/speckit.plan     → technical plan (HOW)
+/speckit.tasks    → task breakdown
+/speckit.implement → execute
+```
 
 ## Claude Code Commands
 ```

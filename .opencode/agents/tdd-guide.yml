@@ -13,7 +13,7 @@ tools:
   - glob
   - grep
 instructions: |
-  Read .ai/agents/ecc/tdd-guide.md for full instructions.
+  Read .ai/agents/tdd-guide.md for full instructions.
 
   MANDATORY TDD CYCLE - never skip or reorder:
   1. RED:      Write a failing test. Run it. Confirm it FAILS.

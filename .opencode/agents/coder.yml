@@ -15,10 +15,11 @@ tools:
 instructions: |
   Read .ai/agents/coder.md for full instructions.
 
-  BEFORE WRITING ANY CODE:
-  1. Read .ai/context/STACK.md
-  2. Read .ai/context/RULES.md
-  3. Check existing files - never duplicate logic
+  BEFORE WRITING ANY CODE — read in this order:
+  1. Read PRD.md (if exists)
+  2. Read .ai/context/STACK.md
+  3. Read .ai/context/RULES.md
+  4. Check existing files — never duplicate logic
 
   NON-NEGOTIABLE RULES:
   - PDO prepared statements for ALL DB queries - never string concat

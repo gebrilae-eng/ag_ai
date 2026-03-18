@@ -2,6 +2,33 @@
 
 ---
 
+## [2.6.0] - 2026-03
+
+### Added
+- `prd.py` — auto-generates `PRD.md` from wizard answers (product overview,
+  tech stack, business rules, agent routing, reading chain, file map)
+- `prd-template.md` — manual PRD template in `.ai/spec/templates/`
+- `prd` command in `run.bat` menu (option 5) and direct mode
+- PRD.md optional check in `validate.py`
+- Standardized reading chain: `PRD.md → AGENTS.md → STACK.md → RULES.md`
+
+### Changed
+- `wizard.py` — now auto-calls `prd.py` after context file generation
+- `CLAUDE.md` — reading chain at top, PRD.md in file map
+- `run.bat` — bumped to v2.6, renumbered menu (1-8)
+- `README.md` — added `prd.py` to scripts table, updated menu
+- 4 key agent YAMLs (`orchestrator`, `coder`, `architect`, `spec-workflow`)
+  now read PRD.md first in their instructions
+
+### Fixed
+- 8 YAML agents had stale `ecc/` path references → fixed to `.ai/agents/`
+- 3 agent MDs had stale `sub-agents/` references → fixed to `.ai/agents/`
+- `wizard.py` was creating obsolete `.ai/sub-agents/` directory → removed
+- `run.bat` referenced non-existent `scripts/update.bat` and
+  `scripts/new-project.bat` → replaced with inline commands
+
+---
+
 ## [2.4.0] - 2025-03
 
 ### Added

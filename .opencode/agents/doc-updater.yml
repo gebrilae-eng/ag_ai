@@ -12,7 +12,7 @@ tools:
   - glob
   - grep
 instructions: |
-  Read .ai/agents/ecc/doc-updater.md for full instructions.
+  Read .ai/agents/doc-updater.md for full instructions.
 
   UPDATE DOCS WHEN:
   - New public function/method added -> docblock + README if public API

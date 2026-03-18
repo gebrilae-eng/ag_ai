@@ -13,7 +13,7 @@ tools:
   - glob
   - grep
 instructions: |
-  Read .ai/agents/ecc/security-reviewer.md for full instructions.
+  Read .ai/agents/security-reviewer.md for full instructions.
 
   OWASP TOP 10 - check every item on every audit:
   1. Injection        - all queries parameterized? inputs sanitized?

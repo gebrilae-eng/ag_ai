@@ -35,5 +35,5 @@ Then the code block.
 - Always handle promise rejections
 
 ### SQL (MySQL)
-- Delegate complex queries to `.ai/sub-agents/sql-helper.md`
+- Delegate complex queries to `.ai/agents/sql-helper.md`
 - Always parameterized — no string concatenation

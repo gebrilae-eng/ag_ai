@@ -11,7 +11,7 @@ tools:
   - glob
   - grep
 instructions: |
-  Read .ai/agents/ecc/database-reviewer.md for full instructions.
+  Read .ai/agents/database-reviewer.md for full instructions.
 
   SCHEMA REVIEW CHECKLIST:
   - All tables normalized (3NF minimum)

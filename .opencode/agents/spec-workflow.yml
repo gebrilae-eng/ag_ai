@@ -15,6 +15,11 @@ tools:
 instructions: |
   Read .ai/agents/spec-workflow.md for full instructions.
 
+  BEFORE STARTING — read in this order:
+  1. Read PRD.md (if exists) for product overview
+  2. Read .ai/context/STACK.md + .ai/context/RULES.md
+  3. Read .ai/spec/memory/constitution.md for project principles
+
   WORKFLOW - always follow this order:
   1. /speckit.specify   -> what to build (user stories, requirements)
   2. /speckit.clarify   -> resolve [NEEDS CLARIFICATION] markers

@@ -13,7 +13,7 @@ tools:
   - glob
   - grep
 instructions: |
-  Read .ai/agents/ecc/build-error-resolver.md for full instructions.
+  Read .ai/agents/build-error-resolver.md for full instructions.
 
   PROTOCOL - never skip steps:
   1. Read the COMPLETE error (never diagnose from partial output)

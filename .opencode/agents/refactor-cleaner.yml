@@ -13,7 +13,7 @@ tools:
   - glob
   - grep
 instructions: |
-  Read .ai/agents/ecc/refactor-cleaner.md for full instructions.
+  Read .ai/agents/refactor-cleaner.md for full instructions.
 
   RULES - never break any of these:
   1. Run tests BEFORE starting - all must pass

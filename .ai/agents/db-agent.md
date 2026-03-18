@@ -34,4 +34,4 @@ LIMIT 100;
 ```
 
 ## Delegate
-- Complex SQL generation → `.ai/sub-agents/sql-helper.md`
+- Complex SQL generation → `.ai/agents/sql-helper.md`

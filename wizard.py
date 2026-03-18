@@ -293,7 +293,7 @@ def main():
         print(f"\n  Found {len(existing)} existing file(s).")
         overwrite_all = ask_yes("Overwrite all existing files without prompting?", default=True)
 
-    for d in [".ai/context",".ai/spec/memory",".ai/agents",".ai/sub-agents","specs"]:
+    for d in [".ai/context",".ai/spec/memory",".ai/agents","specs"]:
         (project_path / d).mkdir(parents=True, exist_ok=True)
 
     title("Writing files...")
@@ -315,6 +315,21 @@ def main():
     (project_path / ".ai/context/wizard-answers.json").write_text(
         json.dumps(answers_copy, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"  {GREEN}OK  .ai/context/wizard-answers.json{RESET}")
+
+    # Auto-generate PRD.md
+    title("Generating PRD...")
+    try:
+        import subprocess
+        prd_script = Path(__file__).parent.resolve() / "prd.py"
+        if prd_script.exists():
+            subprocess.run(
+                [sys.executable, str(prd_script), str(project_path), "--regenerate"],
+                check=False
+            )
+        else:
+            print(f"  {YELLOW}--  prd.py not found, skipping PRD generation{RESET}")
+    except Exception as e:
+        print(f"  {YELLOW}--  PRD generation skipped: {e}{RESET}")
 
     tool = answers["ai_tool"].lower()
     print(f"\n{BOLD}{'='*50}\n  Done! {answers['name']} is ready.\n{'='*50}{RESET}\n")

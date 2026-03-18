@@ -11,7 +11,7 @@ tools:
   - glob
   - grep
 instructions: |
-  Read .ai/agents/ecc/code-reviewer.md for full instructions.
+  Read .ai/agents/code-reviewer.md for full instructions.
 
   REVIEW CHECKLIST:
 
