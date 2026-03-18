@@ -19,61 +19,56 @@ git clone https://github.com/gebrilae-eng/ag_ai.git F:\ag_ai
 F:\ag_ai\install.bat D:\my-new-project
 ```
 Asks 2 questions: which AI tool + which components.
-Installs agents, commands, rules into your project folder.
 
 ### Step 3 — Fill project context
 ```cmd
 F:\ag_ai\wizard.bat D:\my-new-project
 ```
-Asks about your project (name, stack, DB, rules).
-Auto-generates **7 files** so AI knows your project immediately.
-
-Then open your AI tool:
-```cmd
-cd D:\my-new-project
-opencode          # OpenCode
-claude            # Claude Code
-```
+Asks about your project and auto-generates 7 files.
 
 ---
 
-## 🎯 Picking an Agent Mode (OpenCode)
+## 🎯 Picking an Agent (OpenCode)
 
 ### Option A — Launcher menu (easiest)
 ```cmd
-F:\ag_ai\agent.bat
+F:\ag_ai\agent.bat           (CMD)
+F:\ag_ai\agent.ps1           (PowerShell)
 ```
-Shows a numbered menu of all 18 agents. Pick a number and OpenCode starts with that agent ready.
+Shows a numbered menu. Pick a number, type your task, OpenCode starts immediately.
 
-### Option B — Direct from command line
-```cmd
-opencode --agent orchestrator       # route any complex task
-opencode --agent spec-workflow      # spec-first planning
-opencode --agent architect          # system design
-opencode --agent coder              # write and refactor code
-opencode --agent tdd-guide          # test-first development
-opencode --agent security-reviewer  # OWASP audit
-opencode --agent code-reviewer      # review code quality
-opencode --agent db-agent           # database specialist
-opencode --agent sql-helper         # generate SQL queries
-opencode --agent api-agent          # API and integrations
-opencode --agent telegram-bot       # Telegram bot specialist
-opencode --agent n8n-workflow       # n8n automation
-opencode --agent debugger           # investigate bugs
-opencode --agent test-writer        # write tests
-opencode --agent refactor-cleaner   # refactor without breaking
-opencode --agent build-error-resolver  # fix build errors
-opencode --agent doc-updater        # sync documentation
-opencode --agent database-reviewer  # review DB schema/queries
+```
+ --- PLANNING ---
+ 1)  orchestrator       route any complex task
+ 2)  spec-workflow      spec-first planning
+ 3)  architect          system design
+
+ --- CODING ---
+ 4)  coder              write and refactor code
+ 5)  tdd-guide          test-first development
+ ...
+
+ Choose (0-18): 1
+ What do you want to do? build daily sales report for Telegram
 ```
 
-### Option C — From inside OpenCode (chat)
+### Option B — From inside OpenCode chat
+Open OpenCode normally, then type in the chat:
 ```
 use orchestrator agent to build [feature]
 use spec-workflow agent to specify: I want to add [feature]
 use tdd-guide agent to implement [function] test-first
-use security-reviewer agent to audit [file]
+use security-reviewer agent to audit [file or folder]
+use db-agent agent to design schema for [entity]
+use sql-helper agent to write a query for [description]
 use debugger agent to investigate [bug]
+use code-reviewer agent to review [file]
+use architect agent to design [system]
+use telegram-bot agent to format [message]
+use n8n-workflow agent to design workflow for [task]
+use test-writer agent to write tests for [function]
+use refactor-cleaner agent to refactor [file]
+use doc-updater agent to update docs for [change]
 ```
 
 ### Built-in modes (Ctrl+M inside OpenCode)
@@ -82,7 +77,6 @@ use debugger agent to investigate [bug]
 | `Build` | Write and edit code (default) |
 | `Plan` | Plan only, no code changes |
 | `Explore` | Read and search only |
-
 
 ---
 
@@ -132,7 +126,7 @@ your-project/
 ├── AGENTS.md                  ← OpenCode reads this first
 ├── CLAUDE.md                  ← Claude Code reads this first
 ├── specs/                     ← feature specs go here
-├── .opencode/agents/          ← 18 OpenCode YAML agents (with mode field)
+├── .opencode/agents/          ← 18 OpenCode YAML agents
 ├── .claude/commands/          ← Claude Code slash commands
 └── .ai/
     ├── agents/                ← 13 markdown agent instructions
@@ -154,7 +148,6 @@ your-project/
 | `.ai/context/RULES.md` | Coding rules + project-specific rules |
 | `.ai/spec/memory/constitution.md` | Project principles |
 | `.ai/context/wizard-answers.json` | Your answers (re-run wizard to update) |
-
 
 ---
 
@@ -192,11 +185,11 @@ F:\ag_ai\update.ps1       (PowerShell)
 |------|---------|
 | `install.bat / .ps1` | Install agents into a project |
 | `wizard.bat / .ps1` | Fill context files (run after install) |
-| `agent.bat` | Launch OpenCode with a specific agent |
+| `agent.bat / .ps1` | Launch OpenCode with specific agent |
 | `update.bat / .ps1` | Pull latest from GitHub |
 | `new-project.bat` | Create + install + wizard in one shot |
-| `setup_ai.py` | Python installer (called by install scripts) |
-| `wizard.py` | Python wizard (called by wizard scripts) |
+| `setup_ai.py` | Python installer |
+| `wizard.py` | Python wizard |
 
 ---
 

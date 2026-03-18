@@ -9,34 +9,34 @@ echo.
 echo  Pick an agent to start with:
 echo.
 echo  --- PLANNING ---
-echo  1)  orchestrator      route any complex task
-echo  2)  spec-workflow     spec-first planning
-echo  3)  architect         system design
+echo  1)  orchestrator       route any complex task
+echo  2)  spec-workflow      spec-first planning
+echo  3)  architect          system design
 echo.
 echo  --- CODING ---
-echo  4)  coder             write and refactor code
-echo  5)  tdd-guide         test-first development
-echo  6)  refactor-cleaner  refactor without changing behavior
+echo  4)  coder              write and refactor code
+echo  5)  tdd-guide          test-first development
+echo  6)  refactor-cleaner   refactor without breaking
 echo  7)  build-error-resolver  fix build errors
 echo.
 echo  --- REVIEW ---
-echo  8)  code-reviewer     review code quality
-echo  9)  security-reviewer OWASP security audit
-echo  10) database-reviewer DB schema and queries
+echo  8)  code-reviewer      review code quality
+echo  9)  security-reviewer  OWASP security audit
+echo  10) database-reviewer  DB schema and queries
 echo.
 echo  --- DATABASE ---
-echo  11) db-agent          database specialist
-echo  12) sql-helper        generate SQL queries
+echo  11) db-agent           database specialist
+echo  12) sql-helper         generate SQL queries
 echo.
 echo  --- INTEGRATIONS ---
-echo  13) api-agent         API design and integration
-echo  14) telegram-bot      Telegram bot specialist
-echo  15) n8n-workflow      n8n automation
+echo  13) api-agent          API design and integration
+echo  14) telegram-bot       Telegram bot specialist
+echo  15) n8n-workflow       n8n automation
 echo.
 echo  --- SUPPORT ---
-echo  16) debugger          investigate bugs
-echo  17) test-writer       write tests
-echo  18) doc-updater       update documentation
+echo  16) debugger           investigate bugs
+echo  17) test-writer        write tests
+echo  18) doc-updater        update documentation
 echo.
 echo  0)  no agent (default Build mode)
 echo.
@@ -62,16 +62,25 @@ if "!CHOICE!"=="17" set AGENT=test-writer
 if "!CHOICE!"=="18" set AGENT=doc-updater
 if "!CHOICE!"=="0"  set AGENT=
 
-if "!AGENT!"=="" (
+if defined AGENT (
+    set /p TASK=  What do you want to do? 
+    echo.
+    echo  Starting OpenCode: use !AGENT! agent to !TASK!
+    echo.
+    if "%1"=="" (
+        opencode run "use !AGENT! agent to !TASK!"
+    ) else (
+        opencode run "use !AGENT! agent to !TASK!" %1
+    )
+) else (
     echo.
     echo  Starting OpenCode in default Build mode...
     echo.
-    opencode %1
-) else (
-    echo.
-    echo  Starting OpenCode with agent: !AGENT!
-    echo.
-    opencode --agent !AGENT! %1
+    if "%1"=="" (
+        opencode
+    ) else (
+        opencode %1
+    )
 )
 
 endlocal
