@@ -5,26 +5,21 @@ param(
 
 $AgAiDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-Write-Host ""
-Write-Host " ag_ai - Update and Install"
-Write-Host " ==========================="
-Write-Host " ag_ai location: $AgAiDir"
-Write-Host ""
+Write-Output ""
+Write-Output " ag_ai - Install"
+Write-Output " ================"
+Write-Output " ag_ai location: $AgAiDir"
+Write-Output ""
 
-Set-Location $AgAiDir
-
-Write-Host "[1/3] Pulling latest from GitHub..."
-git fetch origin
-git reset --hard origin/main
-Write-Host ""
-
-Write-Host "[2/3] Running setup..."
+Write-Output "[1/2] Running setup..."
 if ($ProjectPath -eq "") {
     python "$AgAiDir\setup_ai.py"
 } else {
     python "$AgAiDir\setup_ai.py" $ProjectPath
 }
 
-Write-Host ""
-Write-Host "[3/3] Done!"
+Write-Output ""
+Write-Output "[2/2] Done!"
+Write-Output ""
+Write-Output " Tip: to update ag_ai itself run update.ps1"
 Read-Host "Press Enter to continue"

@@ -10,11 +10,9 @@ echo   ag_ai - New Project Setup
 echo  ================================
 echo.
 
-:: Step 1: Project name
 set /p PROJECT_NAME=  Project name: 
 if "!PROJECT_NAME!"=="" set PROJECT_NAME=my-project
 
-:: Step 2: Where to create it
 echo.
 echo  Where to create the project?
 echo  1) C:\laragon\www\
@@ -34,27 +32,34 @@ if "!BASE_PATH!"=="" set BASE_PATH=C:\laragon\www
 
 set "PROJECT_PATH=!BASE_PATH!\!PROJECT_NAME!"
 
+if exist "!PROJECT_PATH!\CLAUDE.md" (
+    echo.
+    echo  ============================================================
+    echo   WARNING: !PROJECT_PATH! already has an ag_ai project!
+    echo  ============================================================
+    set /p CONFIRM=  Overwrite existing project? [y/N]: 
+    if /i not "!CONFIRM!"=="y" (
+        echo  Cancelled.
+        pause
+        goto :eof
+    )
+    echo.
+)
+
 echo.
 echo  Creating: !PROJECT_PATH!
 echo.
 
-:: Create folder
 mkdir "!PROJECT_PATH!" 2>nul
 
-:: Update ag_ai
-echo  [1/3] Updating ag_ai...
-cd /d "%AG_AI_DIR%"
-git fetch origin -q
-git reset --hard origin/main -q
-git checkout HEAD -- . -q
-
-:: Install infrastructure
-echo  [2/3] Installing AI infrastructure...
+echo  [1/3] Installing AI infrastructure...
 python "%AG_AI_DIR%\setup_ai.py" "!PROJECT_PATH!" --auto
 
-:: Run wizard
-echo  [3/3] Setting up project context...
+echo  [2/3] Setting up project context...
 python "%AG_AI_DIR%\wizard.py" "!PROJECT_PATH!"
+
+echo  [3/3] Validating setup...
+python "%AG_AI_DIR%\validate.py" "!PROJECT_PATH!"
 
 echo.
 echo  Done! Project ready at: !PROJECT_PATH!
