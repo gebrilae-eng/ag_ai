@@ -10,22 +10,13 @@
 
 ## Quick Start — 3 Steps
 
-### Step 1 — Clone once per machine
 ```cmd
 git clone https://github.com/gebrilae-eng/ag_ai.git C:\ag_ai
+C:\ag_ai\install.bat D:\my-project
+C:\ag_ai\wizard.bat  D:\my-project
 ```
 
-### Step 2 — Install into your project
-```cmd
-C:\ag_ai\install.bat D:\my-new-project
-```
-
-### Step 3 — Fill project context
-```cmd
-C:\ag_ai\wizard.bat D:\my-new-project
-```
-
-Or all three steps in one:
+Or all in one:
 ```cmd
 C:\ag_ai\new-project.bat
 ```
@@ -44,24 +35,32 @@ C:\ag_ai\new-project.bat
 | `agent.bat / .ps1` | Launch OpenCode with a specific agent from a menu |
 | `new-project.bat` | Create + install + wizard in one shot |
 
-### New in v2.1
+### New flags in v2.1
 ```cmd
-:: Preview what would change before installing
-python setup_ai.py D:\my-project --dry-run
-
-:: Update agents only, never touches your context files
-python setup_ai.py D:\my-project --update-agents
-C:\ag_ai\update-project.bat D:\my-project
-
-:: Verify project is correctly configured
-C:\ag_ai\validate.bat D:\my-project
+python setup_ai.py D:\my-project --dry-run        :: preview changes
+python setup_ai.py D:\my-project --update-agents  :: agents only
+C:\ag_ai\update-project.bat D:\my-project         :: same as above
+C:\ag_ai\validate.bat D:\my-project               :: verify setup
 ```
+
+---
+
+## Global OpenCode Config
+
+ag_ai ships with `.config/opencode/opencode.json` — copy it to your
+OpenCode global config folder to get all 18 agents available in every project:
+
+```cmd
+copy C:\ag_ai\.config\opencode\opencode.json C:\Users\%USERNAME%\.config\opencode\opencode.json
+```
+
+Or let the installer do it automatically (added in v2.2).
 
 ---
 
 ## Agent System
 
-### How to invoke agents in OpenCode
+### Invoke agents in OpenCode
 ```
 use orchestrator agent to manage: [complex multi-step task]
 use coder agent to implement [function or feature]
@@ -76,13 +75,13 @@ use telegram-bot agent to implement [command or message]
 use n8n-workflow agent to design workflow for [task]
 use test-writer agent to write tests for [function]
 use refactor-cleaner agent to refactor [file]
-use doc-updater agent to update docs for [change]
+use doc-updater agent to update docs after [change]
 use build-error-resolver agent to fix [error message]
 use spec-workflow agent to specify: I want to add [feature]
 use database-reviewer agent to review [schema or migration]
 ```
 
-### Agent launcher menu
+### Agent launcher menu (easiest)
 ```cmd
 C:\ag_ai\agent.bat    (CMD)
 C:\ag_ai\agent.ps1    (PowerShell)
@@ -97,7 +96,7 @@ C:\ag_ai\agent.ps1    (PowerShell)
 |-------|------|-------|
 | `orchestrator` | Delegates only — **never writes code itself** | read, glob, grep, task |
 | `spec-workflow` | Spec-first: specify → clarify → plan → tasks | full |
-| `architect` | System design, trade-offs, ADRs (Opus model) | read, write, glob, grep |
+| `architect` | System design, trade-offs, ADRs — Opus model | read, write, glob, grep |
 
 ### Development
 | Agent | Role | Tools |
@@ -126,20 +125,21 @@ C:\ag_ai\agent.ps1    (PowerShell)
 | `debugger` | Reproduce → Isolate → Fix → Verify | full |
 | `test-writer` | Unit, integration, E2E tests | full |
 
-> All agents are `mode: primary`.
-> `orchestrator` is the only agent that **delegates only** — read/grep/task tools, never write or bash.
+> All 18 agents are `mode: primary`.
+> `orchestrator` only has read/glob/grep/task — it plans and delegates, never writes.
+> `architect` uses claude-opus-4-6 for deeper reasoning. All others use claude-sonnet-4-6.
 
 ---
 
 ## Feature Workflow
 
-### Spec-first (recommended for new features)
+### Spec-first (recommended)
 ```
 use spec-workflow agent to specify: I want to add [feature]
 use orchestrator agent to manage: plan and implement [feature]
 ```
 
-Or with Claude Code slash commands:
+### Claude Code slash commands
 ```
 /speckit.specify  I want to add [feature]
 /speckit.plan
@@ -149,22 +149,14 @@ Or with Claude Code slash commands:
 /security
 ```
 
-### Quick implementation (small tasks)
-```
-use coder agent to implement [specific function]
-use test-writer agent to write tests for [function]
-use security-reviewer agent to audit [file]
-```
-
 ### Spec folder structure
 ```
-specs/
-└── 001-feature-name/
-    ├── spec.md        <- WHAT (user stories, requirements)
-    ├── plan.md        <- HOW (tech decisions, phases)
-    ├── data-model.md  <- DB schema and entities
-    ├── tasks.md       <- ordered tasks with [P] parallel markers
-    └── discovery.md   <- research findings (optional)
+specs/001-feature-name/
+  spec.md        <- WHAT (user stories, requirements)
+  plan.md        <- HOW (tech decisions, phases)
+  data-model.md  <- DB schema and entities
+  tasks.md       <- ordered tasks with [P] parallel markers
+  discovery.md   <- research findings (optional)
 ```
 
 ---
@@ -173,23 +165,21 @@ specs/
 
 ```
 your-project/
-├── AGENTS.md                     <- OpenCode reads this first
-├── CLAUDE.md                     <- Claude Code reads this first
-├── specs/                        <- feature specs go here
-├── .opencode/agents/             <- 18 OpenCode YAML agents
-├── .claude/commands/             <- Claude Code slash commands
+├── AGENTS.md                    <- OpenCode reads this first
+├── CLAUDE.md                    <- Claude Code reads this first
+├── specs/
+├── .opencode/agents/            <- 18 project-level YAML agents
+├── .claude/commands/            <- Claude Code slash commands
 └── .ai/
-    ├── agents/                   <- agent markdown instructions
-    │   └── ecc/                  <- ECC specialist agents
-    ├── sub-agents/               <- sql, telegram, n8n, debugger...
-    ├── rules/
-    │   ├── php/                  <- PHP security + patterns + testing
-    │   └── common/               <- universal security + coding style
-    ├── context/                  <- PROJECT.md, STACK.md, RULES.md
-    └── spec/                     <- Spec Kit commands + templates
+    ├── agents/ecc/              <- ECC specialist agent instructions
+    ├── sub-agents/              <- sql, telegram, n8n, debugger...
+    ├── rules/php/               <- PHP security + patterns + testing
+    ├── rules/common/            <- universal security + coding style
+    ├── context/                 <- PROJECT.md, STACK.md, RULES.md
+    └── spec/                    <- Spec Kit commands + templates
 ```
 
-Files generated by `wizard.bat`:
+**Generated by `wizard.bat`:**
 
 | File | Content |
 |------|---------|
