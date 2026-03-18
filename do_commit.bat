@@ -1,4 +1,4 @@
 cd C:\ag_ai
 git add -A
-git commit -m "v2.3.0: flat structure, merge rules+commands+agents dirs, update scripts+docs"
+git commit -m "v2.4.0: add run.bat menu, update validate.py for flat structure, remove GUIDE.md, update README+CHANGELOG"
 git push origin main

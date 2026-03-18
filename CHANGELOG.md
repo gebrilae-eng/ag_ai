@@ -2,55 +2,51 @@
 
 ---
 
-## [2.3.0] - 2025-03
+## [2.4.0] - 2025-03
 
-### Changed (restructure — no behavior changes)
+### Added
+- `run.bat` — single entry-point menu: new-project / install / wizard /
+  validate / update / update-project / agent. All scripts now accessible
+  from one command.
 
-**Flat .ai/ structure:**
-- `.ai/agents/ecc/` + `.ai/sub-agents/` merged into `.ai/agents/` (one folder, 18 files)
-- `.ai/rules/common/security.md` + `.ai/rules/common/coding-style.md` → `.ai/rules/common.md`
-- `.ai/rules/php/security.md` + `.ai/rules/php/patterns.md` + `.ai/rules/php/testing.md` → `.ai/rules/php.md`
-- `.ai/spec/commands/` (6 files) → `.ai/spec/commands.md` (one file)
-
-**Scripts:**
-- `agent.bat` regrouped into Planning / Development / Review / Specialists
-- `agent.ps1` rewritten with ordered hashtable, same grouping
-- `setup_ai.py` updated to reflect flat structure (removed ecc/sub-agents/rules-php/rules-common paths)
-- `make_dirs()` updated — no longer creates obsolete sub-folders
-
-**Docs:**
-- `orchestrator.md` updated — removed old ecc/sub-agents path references
-- `spec-workflow.md` updated — references `commands.md` not `commands/`
-- `CLAUDE.md` template updated — reflects new flat layout
-- `README.md` updated — repo structure + project structure sections
+### Changed
+- `validate.py` — added flat structure checks (warns if old ecc/sub-agents
+  dirs still present, verifies common.md + php.md + commands.md exist)
+- `validate.py` — added recommended structure section in output
+- `agent.bat` / `agent.ps1` — regrouped into Planning / Development /
+  Review / Specialists for clarity
 
 ### Removed
-- `.ai/agents/ecc/` directory (contents moved to `.ai/agents/`)
-- `.ai/sub-agents/` directory (contents moved to `.ai/agents/`)
-- `.ai/rules/common/` directory (merged into `.ai/rules/common.md`)
-- `.ai/rules/php/` directory (merged into `.ai/rules/php.md`)
-- `.ai/spec/commands/` directory (merged into `.ai/spec/commands.md`)
+- `GUIDE.md` — content was already in README.md since v2.1
+
+---
+
+## [2.3.0] - 2025-03
+
+### Changed (flat structure — no behavior changes)
+- `.ai/agents/ecc/` + `.ai/sub-agents/` merged into `.ai/agents/`
+- `rules/common/` (2 files) → `rules/common.md`
+- `rules/php/` (3 files) → `rules/php.md`
+- `spec/commands/` (6 files) → `spec/commands.md`
+- `setup_ai.py` updated for new paths
+- `orchestrator.md` + `spec-workflow.md` references updated
 
 ---
 
 ## [2.2.0] - 2025-03
-
 ### Added
 - `.config/opencode/opencode.json` — global OpenCode config, all 18 agents as primary
 
 ---
 
 ## [2.1.0] - 2025-03
-
 ### Added
 - `validate.py` / `validate.bat`, `update-project.bat`
 - `--dry-run` and `--update-agents` flags in `setup_ai.py`
 - Confirmation summary + overwrite-all prompt in `wizard.py`
-
 ### Changed
 - All 18 agents → `mode: primary`, orchestrator delegates only
 - `install.bat` — removed `git reset --hard`
-- Models updated to `claude-sonnet-4-6`
 
 ---
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 ag_ai - Project Validator
-Checks context files for unfilled placeholders and verifies agents are installed.
+Checks context files, agents, and structure completeness.
 Usage:
   python validate.py [project_path]
 """
@@ -60,9 +60,18 @@ REQUIRED_AGENTS = [
     ".opencode/agents/spec-workflow.yml",
 ]
 
+RECOMMENDED_STRUCTURE = {
+    ".ai/agents/":               "18 agent instruction files",
+    ".ai/rules/common.md":       "coding style + security rules",
+    ".ai/rules/php.md":          "PHP architecture + testing rules",
+    ".ai/spec/commands.md":      "speckit commands reference",
+    ".ai/spec/templates/":       "spec, plan, tasks templates",
+}
+
 def ok(msg):   print(f"  {GREEN}[OK]  {RESET}{msg}")
 def warn(msg): print(f"  {YELLOW}[WARN]{RESET} {msg}")
 def err(msg):  print(f"  {RED}[ERR] {RESET}{msg}")
+def info(msg): print(f"        {msg}")
 
 def check_placeholders(filepath):
     try:
@@ -79,6 +88,7 @@ def main():
     print(f"  Project: {project_path}\n")
     issues = 0
 
+    # 1. Required context files
     print(f"{BOLD}  Context files{RESET}")
     for rel, desc in REQUIRED_FILES.items():
         fp = project_path / rel
@@ -93,6 +103,7 @@ def main():
             else:
                 ok(f"{rel}")
 
+    # 2. OpenCode agents
     print(f"\n{BOLD}  OpenCode agents{RESET}")
     missing = [a.split("/")[-1].replace(".yml","")
                for a in REQUIRED_AGENTS
@@ -104,20 +115,46 @@ def main():
     else:
         ok(f"All {len(REQUIRED_AGENTS)} OpenCode agents installed")
 
+    # 3. Structure check (flat layout)
+    print(f"\n{BOLD}  Structure (flat layout){RESET}")
+    for rel, desc in RECOMMENDED_STRUCTURE.items():
+        p = project_path / rel
+        if not p.exists():
+            warn(f"Missing: {rel}  ({desc})")
+            warn("Run: python setup_ai.py [path] --update-agents to restore")
+            issues += 1
+        elif p.is_dir():
+            count = len(list(p.glob("*")))
+            ok(f"{rel}  ({count} files)")
+        else:
+            ok(f"{rel}")
+
+    # Old structure check — warn if still present
+    old_paths = [".ai/agents/ecc", ".ai/sub-agents",
+                 ".ai/rules/common", ".ai/rules/php",
+                 ".ai/spec/commands"]
+    stale = [p for p in old_paths if (project_path / p).exists()]
+    if stale:
+        warn(f"Old structure found: {', '.join(stale)}")
+        warn("Run update-project.bat to migrate to flat structure")
+        issues += 1
+
+    # 4. Setup status
     print(f"\n{BOLD}  Setup status{RESET}")
     if (project_path / ".ai/context/wizard-answers.json").exists():
         ok("Wizard has been run")
     else:
-        warn("Wizard not run yet - run: python wizard.py [path]")
+        warn("Wizard not run - run: python wizard.py [path]")
         issues += 1
 
     gi = project_path / ".gitignore"
     if gi.exists() and ".env" in gi.read_text(encoding="utf-8", errors="ignore"):
-        ok(".gitignore has .env protection")
+        ok(".gitignore protects .env")
     else:
         warn(".gitignore missing .env entry")
         issues += 1
 
+    # Summary
     print(f"\n{'─'*42}")
     if issues == 0:
         print(f"  {GREEN}{BOLD}All checks passed.{RESET} Project is ready.\n")

@@ -11,16 +11,26 @@
 
 ```cmd
 git clone https://github.com/gebrilae-eng/ag_ai.git C:\ag_ai
+C:\ag_ai\run.bat
+```
+
+Or directly:
+```cmd
 C:\ag_ai\install.bat D:\my-project
 C:\ag_ai\wizard.bat  D:\my-project
 ```
-
-Or all in one: `C:\ag_ai\new-project.bat`
 
 ---
 
 ## Scripts
 
+### Main entry point
+```cmd
+C:\ag_ai\run.bat
+```
+Shows a menu: new-project / install / wizard / validate / update / update-project / agent
+
+### Individual scripts
 | Script | Purpose |
 |--------|---------|
 | `install.bat / .ps1` | Install agents into a project |
@@ -31,8 +41,9 @@ Or all in one: `C:\ag_ai\new-project.bat`
 | `agent.bat / .ps1` | Launch OpenCode with agent menu |
 | `new-project.bat` | Create + install + wizard in one shot |
 
+### Python flags
 ```cmd
-python setup_ai.py D:\my-project --dry-run        :: preview
+python setup_ai.py D:\my-project --dry-run        :: preview changes
 python setup_ai.py D:\my-project --update-agents  :: agents only
 ```
 
@@ -40,8 +51,7 @@ python setup_ai.py D:\my-project --update-agents  :: agents only
 
 ## Global OpenCode Config
 
-Copy `.config/opencode/opencode.json` to enable all 18 agents globally
-(works in every project, even without `.opencode/agents/`):
+Copy once to get all 18 agents available in every project:
 
 ```cmd
 copy C:\ag_ai\.config\opencode\opencode.json ^
@@ -111,14 +121,14 @@ Or use the menu: `C:\ag_ai\agent.bat`
 
 ---
 
-## Project File Structure
+## Project File Structure (after install + wizard)
 
 ```
 your-project/
 ├── AGENTS.md                    ← OpenCode reads first
 ├── CLAUDE.md                    ← Claude Code reads first
-├── specs/                       ← feature specs
-├── .opencode/agents/            ← 18 project-level YAML agents
+├── specs/                       ← feature specs per branch
+├── .opencode/agents/            ← 18 YAML agent configs
 ├── .claude/commands/            ← Claude Code slash commands
 └── .ai/
     ├── agents/                  ← 18 agent instruction .md files
@@ -132,28 +142,27 @@ your-project/
     └── context/                 ← PROJECT.md, STACK.md, RULES.md
 ```
 
-**Flat structure — no nested sub-agents/ or rules/php/ or rules/common/ folders.**
-
 ---
 
-## Repo Structure
+## Repo File Structure
 
 ```
 ag_ai/
+├── run.bat                      ← main entry point (menu)
+├── install.bat / .ps1
+├── wizard.bat / .ps1 + wizard.py
+├── update.bat / .ps1
+├── update-project.bat
+├── validate.bat + validate.py
+├── new-project.bat
+├── agent.bat / .ps1
+├── setup_ai.py                  ← installer engine
 ├── .ai/                         ← installed into projects
 ├── .opencode/agents/            ← 18 YAML agent configs
 ├── .claude/commands/            ← slash commands
 ├── .config/opencode/
-│   └── opencode.json            ← global OpenCode config (copy manually)
-├── agent.bat / agent.ps1        ← agent launcher menu
-├── install.bat / .ps1           ← project installer
-├── wizard.bat / .ps1 + wizard.py ← context setup
-├── update.bat / .ps1            ← update ag_ai
-├── update-project.bat           ← update project agents
-├── validate.bat + validate.py   ← verify setup
-├── new-project.bat              ← one-shot setup
-├── setup_ai.py                  ← installer engine
-├── CLAUDE.md                    ← Claude Code entry point template
+│   └── opencode.json            ← global OpenCode config
+├── CLAUDE.md                    ← entry point template
 ├── CHANGELOG.md
 └── README.md
 ```
