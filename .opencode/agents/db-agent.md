@@ -3,12 +3,12 @@ name: db-agent
 description: Database specialist - MySQL schema design, query optimization, migrations, indexes, and data integrity. Full read/write/execute access.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/db-agent.md for full instructions.

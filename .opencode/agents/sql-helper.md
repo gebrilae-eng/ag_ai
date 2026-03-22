@@ -3,11 +3,11 @@ name: sql-helper
 description: MySQL query specialist - generates optimized, parameterized queries for any data need. Sales, inventory, analytics, and more.
 mode: primary
 tools:
-  - read
-  - write
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/sql-helper.md for full instructions.

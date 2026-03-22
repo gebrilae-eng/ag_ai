@@ -3,12 +3,12 @@ name: build-error-resolver
 description: Build and runtime error specialist - diagnoses syntax, dependency, config, and startup failures. Minimal targeted fixes only.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/build-error-resolver.md for full instructions.

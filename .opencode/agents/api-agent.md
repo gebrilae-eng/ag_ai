@@ -3,12 +3,12 @@ name: api-agent
 description: API and integration specialist - REST endpoints, webhooks, third-party integrations, request/response design. Full read/write/execute access.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/api-agent.md for full instructions.

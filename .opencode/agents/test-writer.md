@@ -3,12 +3,12 @@ name: test-writer
 description: Test writing specialist - unit, integration, and E2E tests with strong edge-case coverage. Follows TDD order: test first, then code.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/test-writer.md for full instructions.

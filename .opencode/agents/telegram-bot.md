@@ -3,12 +3,12 @@ name: telegram-bot
 description: Telegram bot specialist - HTML formatting, Arabic RTL messages, message splitting, keyboard layouts, and bot command design.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/telegram-bot.md for full instructions.

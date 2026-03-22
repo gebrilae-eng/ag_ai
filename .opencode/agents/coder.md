@@ -3,12 +3,12 @@ name: coder
 description: Senior developer - writes clean, production-ready PHP/JS/SQL code following project conventions. Full read/write/execute access.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/coder.md for full instructions.

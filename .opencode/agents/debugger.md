@@ -3,12 +3,12 @@ name: debugger
 description: Systematic bug investigator - reproduce, isolate, hypothesize, fix, verify. Never guesses. Full access to read, run, and fix.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/debugger.md for full instructions.

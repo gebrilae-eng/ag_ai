@@ -3,12 +3,12 @@ name: refactor-cleaner
 description: Refactoring specialist - improves code structure without changing behavior. Removes duplication, extracts functions, renames for clarity.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/refactor-cleaner.md for full instructions.

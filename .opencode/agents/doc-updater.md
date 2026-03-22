@@ -3,11 +3,11 @@ name: doc-updater
 description: Documentation specialist - keeps docs, docblocks, README, and changelogs accurate and in sync with code changes.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/doc-updater.md for full instructions.

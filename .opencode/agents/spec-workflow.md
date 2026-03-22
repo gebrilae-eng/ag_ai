@@ -3,12 +3,12 @@ name: spec-workflow
 description: Spec-first workflow specialist - drives specify, clarify, plan, tasks, and implementation handoff through the specs/ directory.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - glob
-  - grep
-  - task
+  read: true
+  write: true
+  edit: true
+  glob: true
+  grep: true
+  task: true
 ---
 
 Read .ai/agents/spec-workflow.md for full instructions.

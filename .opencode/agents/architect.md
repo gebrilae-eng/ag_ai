@@ -3,10 +3,10 @@ name: architect
 description: Software architect - system design, trade-off analysis, component relationships, scalability, and architectural decisions.
 mode: primary
 tools:
-  - read
-  - write
-  - glob
-  - grep
+  read: true
+  write: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/architect.md for full instructions.

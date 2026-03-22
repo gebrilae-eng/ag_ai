@@ -3,12 +3,12 @@ name: n8n-workflow
 description: n8n automation specialist - workflow design, node configuration, JavaScript code nodes, error handling, and MCP tool usage.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/n8n-workflow.md for full instructions.

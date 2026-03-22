@@ -3,12 +3,12 @@ name: tdd-guide
 description: TDD specialist - enforces Red-Green-Refactor. Writes the test first, then minimal implementation. Full access to run tests.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/tdd-guide.md for full instructions.

@@ -3,12 +3,12 @@ name: security-reviewer
 description: Security specialist - OWASP Top 10 audit, secrets detection, SQL injection, XSS, broken auth. Full access to scan and fix.
 mode: primary
 tools:
-  - read
-  - write
-  - edit
-  - bash
-  - glob
-  - grep
+  read: true
+  write: true
+  edit: true
+  bash: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/security-reviewer.md for full instructions.

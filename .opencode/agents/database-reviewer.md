@@ -3,10 +3,10 @@ name: database-reviewer
 description: Database review specialist - schema quality, query safety, migration safety, indexing strategy, and data integrity.
 mode: primary
 tools:
-  - read
-  - write
-  - glob
-  - grep
+  read: true
+  write: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/database-reviewer.md for full instructions.

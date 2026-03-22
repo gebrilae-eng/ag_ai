@@ -3,10 +3,10 @@ name: code-reviewer
 description: Code quality reviewer - correctness, security, performance, maintainability, and style compliance. Full codebase read access.
 mode: primary
 tools:
-  - read
-  - write
-  - glob
-  - grep
+  read: true
+  write: true
+  glob: true
+  grep: true
 ---
 
 Read .ai/agents/code-reviewer.md for full instructions.
