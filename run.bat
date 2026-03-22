@@ -2,10 +2,18 @@
 chcp 65001 >nul
 setlocal EnableDelayedExpansion
 
+:: Get the directory of this batch file (always correct regardless of where called from)
 set "AG_AI_DIR=%~dp0"
 if "%AG_AI_DIR:~-1%"=="\" set "AG_AI_DIR=%AG_AI_DIR:~0,-1%"
 
-:: ── Direct mode: run.bat <command> <project-path> ────────────────────────────
+:: Verify setup_ai.py exists - sanity check
+if not exist "%AG_AI_DIR%\setup_ai.py" (
+    echo  ERROR: Cannot find setup_ai.py in %AG_AI_DIR%
+    echo  Make sure you are running this from C:\ag_ai\run.bat
+    pause & exit /b 1
+)
+
+:: ── Direct mode: run.bat <command> [project-path] ────────────────────────────
 if not "%~1"=="" (
     set "CMD=%~1"
     set "ARG2=%~2"
@@ -35,7 +43,7 @@ echo.
 echo   SETUP
 echo   1)  new-project     create + install + wizard + PRD
 echo   2)  install         install ag_ai + agency-agents
-echo   3)  install-agency  install agency-agents divisions only
+echo   3)  install-agency  install agency-agents only
 echo   4)  wizard          fill context files
 echo   5)  validate        check project setup
 echo   6)  prd             generate/update PRD.md
@@ -54,8 +62,8 @@ set /p "CHOICE=  Choose (1-11): "
 if "!CHOICE!"=="1"  goto :do_new
 if "!CHOICE!"=="2"  goto :do_install
 if "!CHOICE!"=="3"  goto :do_install_agency
-if "!CHOICE!"=="4"  ( python "%AG_AI_DIR%\wizard.py"   & pause & goto :eof )
-if "!CHOICE!"=="5"  ( python "%AG_AI_DIR%\validate.py" & pause & goto :eof )
+if "!CHOICE!"=="4"  goto :do_wizard
+if "!CHOICE!"=="5"  goto :do_validate
 if "!CHOICE!"=="6"  goto :do_prd
 if "!CHOICE!"=="7"  goto :do_update_ag_ai
 if "!CHOICE!"=="8"  goto :do_update_agency
@@ -66,6 +74,7 @@ echo  Invalid choice.
 pause & goto :menu
 
 
+:: ============================================================
 :do_new
     if "!PROJ!"=="" set /p "PROJ=  Project path [D:\my-project]: "
     if "!PROJ!"=="" set "PROJ=D:\my-project"
@@ -80,6 +89,7 @@ pause & goto :menu
     echo  Done! Project ready at: !PROJ!
     pause & goto :eof
 
+:: ============================================================
 :do_install
     set /p "PROJ=  Project path: "
     echo.
@@ -95,6 +105,7 @@ pause & goto :menu
     if "!DIVS!"=="4" ( python "%AG_AI_DIR%\setup_ai.py" "!PROJ!" --ag-only & pause & goto :eof )
     python "%AG_AI_DIR%\setup_ai.py" "!PROJ!" & pause & goto :eof
 
+:: ============================================================
 :do_install_agency
     set /p "PROJ=  Project path: "
     echo.
@@ -103,15 +114,32 @@ pause & goto :menu
     if "!DIVS!"=="2" ( python "%AG_AI_DIR%\setup_ai.py" "!PROJ!" --all-divisions & pause & goto :eof )
     python "%AG_AI_DIR%\setup_ai.py" "!PROJ!" & pause & goto :eof
 
+:: ============================================================
+:do_wizard
+    set /p "PROJ=  Project path: "
+    python "%AG_AI_DIR%\wizard.py" "!PROJ!"
+    pause & goto :eof
+
+:: ============================================================
+:do_validate
+    set /p "PROJ=  Project path: "
+    python "%AG_AI_DIR%\validate.py" "!PROJ!"
+    pause & goto :eof
+
+:: ============================================================
 :do_prd
     set /p "PROJ=  Project path: "
-    python "%AG_AI_DIR%\prd.py" "!PROJ!" --regenerate & pause & goto :eof
+    python "%AG_AI_DIR%\prd.py" "!PROJ!" --regenerate
+    pause & goto :eof
 
+:: ============================================================
 :do_update_project
     set /p "PROJ=  Project path: "
-    python "%AG_AI_DIR%\setup_ai.py" "!PROJ!" --update-agents & pause & goto :eof
+    python "%AG_AI_DIR%\setup_ai.py" "!PROJ!" --update-agents
+    pause & goto :eof
 
 
+:: ============================================================
 :do_update_ag_ai
     echo.
     echo  Updating ag_ai from GitHub...
@@ -127,6 +155,7 @@ pause & goto :menu
     echo  ag_ai updated successfully.
     pause & goto :eof
 
+:: ============================================================
 :do_update_agency
     echo.
     echo  Updating agency-agents cache...
@@ -134,10 +163,11 @@ pause & goto :menu
         git -C "%AG_AI_DIR%\.agency-agents-cache" pull --ff-only
         echo  Cache updated. Re-run install to push to projects.
     ) else (
-        echo  No cache found. Cache will be created on next install.
+        echo  No cache found. Will be created on next install.
     )
     pause & goto :eof
 
+:: ============================================================
 :agency_info
     cls
     echo.
