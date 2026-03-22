@@ -153,6 +153,31 @@ def ensure_agency_cache():
         return None
 
 
+def fix_agent_tools(agents_dir):
+    """Convert YAML list tools to record format required by OpenCode.
+    Before:  tools:\n    - read      After:  tools:\n    read: true
+    """
+    import re
+    TOOLS_LIST = re.compile(r'^(tools:\n)((?:  - \S+\n?)+)', re.MULTILINE)
+    fixed = 0
+    for f in Path(agents_dir).glob('*.md'):
+        try:
+            txt = f.read_text(encoding='utf-8', errors='ignore')
+        except Exception:
+            continue
+        if not re.search(r'^tools:\n  - ', txt, re.MULTILINE):
+            continue
+        def replacer(m):
+            items = re.findall(r'  - (\S+)', m.group(2))
+            return 'tools:\n' + ''.join(f'  {t}: true\n' for t in items)
+        new_txt = TOOLS_LIST.sub(replacer, txt)
+        if new_txt != txt:
+            f.write_text(new_txt, encoding='utf-8')
+            fixed += 1
+    if fixed:
+        ok(f"Fixed {fixed} list-format tools -> record format")
+
+
 def fix_agent_colors(agents_dir):
     """Fix invalid color names in agency-agents frontmatter to valid hex values."""
     import re
@@ -314,6 +339,8 @@ def update_agents_only(target):
             total = install_agency_agents(target, agency_root, divisions, overwrite_all=True)
             ok(f"agency-agents updated: {total} agents")
             build_agents_md(target, divisions, agency_root, overwrite_all=True)
+            fix_agent_colors(target / ".opencode" / "agents")
+            fix_agent_tools(target / ".opencode" / "agents")
     info("Context files preserved: PROJECT.md, STACK.md, RULES.md, constitution.md")
 
 def make_dirs(target, use_opencode=True, use_speckit=True):
@@ -379,6 +406,7 @@ def main():
             agency_total = install_agency_agents(target, agency_root, divisions, overwrite_all)
             ok(f"Total agency-agents installed: {agency_total}")
             fix_agent_colors(target / ".opencode" / "agents")
+            fix_agent_tools(target / ".opencode" / "agents")
 
     # ── Step 3: AGENTS.md ───────────────────────────────────────────────────
     header("Generating AGENTS.md...")
