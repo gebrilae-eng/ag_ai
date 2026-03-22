@@ -154,28 +154,57 @@ def ensure_agency_cache():
 
 
 def fix_agent_tools(agents_dir):
-    """Convert YAML list tools to record format required by OpenCode.
-    Before:  tools:\n    - read      After:  tools:\n    read: true
+    """Fix ALL invalid tools formats to OpenCode-required record format.
+    Handles: inline string (tools: Read, Write), list (- read), already record (read: true).
     """
     import re
-    TOOLS_LIST = re.compile(r'^(tools:\n)((?:  - \S+\n?)+)', re.MULTILINE)
+
+    TOOL_ALIASES = {
+        'webfetch':'webfetch','websearch':'websearch','read':'read',
+        'write':'write','edit':'edit','bash':'bash','glob':'glob',
+        'grep':'grep','task':'task','computer':'computer',
+    }
+
+    def normalise(n):
+        return TOOL_ALIASES.get(n.lower().strip(), n.lower().strip())
+
+    def to_record(names):
+        lines = ['tools:']
+        for t in names:
+            n = normalise(t)
+            if n: lines.append(f'  {n}: true')
+        return '\n'.join(lines)
+
+    def fix_content(content):
+        fm = re.match(r'^(---\n)(.*?)(---\n)(.*)', content, re.DOTALL)
+        if not fm: return content
+        open_f, front, close_f, body = fm.groups()
+        # inline string: tools: WebFetch, Read
+        m = re.search(r'^tools:[ \t]+([^\n]+)$', front, re.MULTILINE)
+        if m:
+            names = [t.strip() for t in m.group(1).split(',') if t.strip()]
+            new_front = front[:m.start()] + to_record(names) + '\n' + front[m.end()+1:]
+            return open_f + new_front + close_f + body
+        # list: tools:\n  - read
+        m = re.search(r'^tools:\n((?:[ \t]+-[ \t]+\S+\n?)+)', front, re.MULTILINE)
+        if m:
+            names = re.findall(r'[ \t]+-[ \t]+(\S+)', m.group(1))
+            new_front = front[:m.start()] + to_record(names) + '\n' + front[m.end():]
+            return open_f + new_front + close_f + body
+        return content
+
     fixed = 0
     for f in Path(agents_dir).glob('*.md'):
         try:
             txt = f.read_text(encoding='utf-8', errors='ignore')
         except Exception:
             continue
-        if not re.search(r'^tools:\n  - ', txt, re.MULTILINE):
-            continue
-        def replacer(m):
-            items = re.findall(r'  - (\S+)', m.group(2))
-            return 'tools:\n' + ''.join(f'  {t}: true\n' for t in items)
-        new_txt = TOOLS_LIST.sub(replacer, txt)
+        new_txt = fix_content(txt)
         if new_txt != txt:
             f.write_text(new_txt, encoding='utf-8')
             fixed += 1
     if fixed:
-        ok(f"Fixed {fixed} list-format tools -> record format")
+        ok(f"Fixed {fixed} invalid tools formats -> record format")
 
 
 def fix_agent_colors(agents_dir):
