@@ -1,25 +1,50 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-ag_ai -- AI Infrastructure Setup Script
+ag_ai x agency-agents -- Merged Installer v3.0
+================================================
 Usage:
-  python setup_ai.py [project_path]                  interactive
-  python setup_ai.py [project_path] --auto           install everything silently
-  python setup_ai.py [project_path] --dry-run        preview changes only
-  python setup_ai.py [project_path] --update-agents  update agents only, preserve context
+  python setup_ai.py [project_path]
+  python setup_ai.py [project_path] --auto
+  python setup_ai.py [project_path] --dry-run
+  python setup_ai.py [project_path] --update-agents
+  python setup_ai.py [project_path] --all-divisions
+  python setup_ai.py [project_path] --divisions engineering,design,testing
+  python setup_ai.py [project_path] --ag-only
+  python setup_ai.py [project_path] --no-agency
 """
 
-import os, sys, shutil
+import os, sys, shutil, subprocess, json
 from pathlib import Path
 
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     sys.stdin.reconfigure(encoding="utf-8", errors="replace")
 
-SCRIPT_DIR  = Path(__file__).parent.resolve()
+SCRIPT_DIR   = Path(__file__).parent.resolve()
+AGENCY_CACHE = SCRIPT_DIR / ".agency-agents-cache"
+AGENCY_REPO  = "https://github.com/msitarzewski/agency-agents.git"
+
 AUTO_MODE   = "--auto"          in sys.argv
 DRY_RUN     = "--dry-run"       in sys.argv
 AGENTS_ONLY = "--update-agents" in sys.argv
+AG_ONLY     = "--ag-only"       in sys.argv
+NO_AGENCY   = "--no-agency"     in sys.argv
+ALL_DIVS    = "--all-divisions" in sys.argv
+
+
+# Dev-relevant divisions (default)
+DEV_DIVISIONS = [
+    "engineering", "design", "product",
+    "project-management", "testing", "support"
+]
+
+ALL_DIVISIONS = [
+    "engineering", "design", "marketing", "sales",
+    "product", "project-management", "testing", "support",
+    "spatial-computing", "specialized", "game-development", "academic",
+    "paid-media", "strategy", "integrations"
+]
 
 GREEN="\033[92m"; YELLOW="\033[93m"; RED="\033[91m"
 BLUE="\033[94m";  CYAN="\033[96m";   RESET="\033[0m"
@@ -40,28 +65,6 @@ def ask_yes(question, default=True):
         return default if ans == "" else ans in ("y", "yes")
     except: return default
 
-def ask_choice(question, options):
-    if AUTO_MODE or AGENTS_ONLY:
-        return list(range(len(options)))
-    print(f"\n  ? {question}")
-    print(f"  {'─'*50}")
-    for i, (label, desc) in enumerate(options, 1):
-        print(f"  {BOLD}{i}{RESET}) {label:<28} {DIM}{desc}{RESET}")
-    print(f"  {BOLD}0{RESET}) All  {DIM}(install everything){RESET}")
-    print()
-    try:
-        raw = input("  Select numbers (e.g. 1 3) or 0 for all: ").strip()
-    except: raw = "0"
-    if raw == "0" or raw == "":
-        return list(range(len(options)))
-    selected = []
-    for x in raw.split():
-        try:
-            idx = int(x) - 1
-            if 0 <= idx < len(options): selected.append(idx)
-        except: pass
-    return selected if selected else list(range(len(options)))
-
 def get_target():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if args:
@@ -76,6 +79,7 @@ def get_target():
     if p.resolve() == SCRIPT_DIR.resolve():
         err("Cannot install ag_ai into itself!"); sys.exit(1)
     return p
+
 
 def copy_item(src, dest, label, overwrite_all=False):
     src, dest = Path(src), Path(dest)
@@ -108,6 +112,144 @@ def install_ai_folder(target, overwrite_all=False):
     shutil.copytree(ai_src, ai_dest)
     ok("Installed: .ai/"); return True
 
+def get_divisions():
+    """Parse --divisions flag or return defaults."""
+    for arg in sys.argv:
+        if arg.startswith("--divisions="):
+            return [d.strip() for d in arg.split("=", 1)[1].split(",")]
+    # Check next arg after --divisions
+    for i, arg in enumerate(sys.argv):
+        if arg == "--divisions" and i + 1 < len(sys.argv):
+            return [d.strip() for d in sys.argv[i+1].split(",")]
+    if ALL_DIVS:
+        return ALL_DIVISIONS
+    return DEV_DIVISIONS
+
+def ensure_agency_cache():
+    """Clone or update agency-agents cache. Returns Path or None."""
+    if AGENCY_CACHE.exists():
+        info("agency-agents cache found — checking for updates...")
+        result = subprocess.run(
+            ["git", "-C", str(AGENCY_CACHE), "pull", "--ff-only"],
+            capture_output=True, text=True
+        )
+        if result.returncode == 0:
+            ok(f"agency-agents cache updated")
+        else:
+            warn("Could not update cache (offline?) — using existing")
+        return AGENCY_CACHE
+
+    info(f"Cloning agency-agents (first time — may take 30s)...")
+    result = subprocess.run(
+        ["git", "clone", "--depth=1", AGENCY_REPO, str(AGENCY_CACHE)],
+        capture_output=True, text=True
+    )
+    if result.returncode == 0:
+        ok("agency-agents cloned successfully")
+        return AGENCY_CACHE
+    else:
+        err(f"Clone failed: {result.stderr.strip()[:200]}")
+        warn("Continuing with ag_ai agents only")
+        return None
+
+
+def install_agency_agents(target, agency_root, divisions, overwrite_all=False):
+    """Copy agency-agents .md files into .opencode/agents/ and .claude/agents/"""
+    oc_dest = target / ".opencode" / "agents"
+    cl_dest = Path.home() / ".claude" / "agents"
+
+    if not DRY_RUN:
+        oc_dest.mkdir(parents=True, exist_ok=True)
+        cl_dest.mkdir(parents=True, exist_ok=True)
+
+    total = 0
+    for div in divisions:
+        div_path = agency_root / div
+        if not div_path.exists():
+            warn(f"Division not found in cache: {div}"); continue
+        agents = list(div_path.glob("*.md"))
+        for agent_file in agents:
+            if not DRY_RUN:
+                shutil.copy2(agent_file, oc_dest / agent_file.name)
+                shutil.copy2(agent_file, cl_dest / agent_file.name)
+            total += 1
+        ok(f"  {div:25s} → {len(agents):3d} agents")
+
+    return total
+
+def build_agents_md(target, divisions, agency_root, overwrite_all=False):
+    """Generate AGENTS.md with combined routing for ag_ai + agency-agents."""
+    lines = [
+        "# AGENTS.md\n",
+        "> **Read this first.** Then read CLAUDE.md and .ai/context/ files.\n",
+        "---\n",
+        "## 🏗 ag_ai — Core 18 Agents\n",
+        "| Task | Agent |",
+        "|------|-------|",
+        "| Complex multi-step task | `orchestrator` — delegates only, never codes |",
+        "| Write / refactor code | `coder` |",
+        "| Database schema + queries | `db-agent` |",
+        "| REST endpoints / webhooks | `api-agent` |",
+        "| Spec-first planning | `spec-workflow` |",
+        "| System design | `architect` |",
+        "| TDD implementation | `tdd-guide` |",
+        "| Security audit | `security-reviewer` |",
+        "| Code review | `code-reviewer` |",
+        "| DB quality review | `database-reviewer` |",
+        "| Refactoring | `refactor-cleaner` |",
+        "| Build / runtime errors | `build-error-resolver` |",
+        "| Documentation | `doc-updater` |",
+        "| SQL generation | `sql-helper` |",
+        "| Telegram bot | `telegram-bot` |",
+        "| n8n workflows | `n8n-workflow` |",
+        "| Debugging | `debugger` |",
+        "| Writing tests | `test-writer` |",
+        "",
+        "---\n",
+        "## 🏢 agency-agents — Specialist Divisions\n",
+    ]
+
+    if agency_root:
+        for div in divisions:
+            div_path = agency_root / div
+            if not div_path.exists(): continue
+            agents = sorted(div_path.glob("*.md"))
+            if not agents: continue
+            lines.append(f"### {div.replace('-', ' ').title()}\n")
+            lines.append("| Agent | Role |")
+            lines.append("|-------|------|")
+            for a in agents:
+                name = a.stem
+                role = name.replace(f"{div}-", "").replace("-", " ").title()
+                lines.append(f"| `{name}` | {role} |")
+            lines.append("")
+    else:
+        lines.append("_agency-agents not installed_\n")
+
+    lines += [
+        "---\n",
+        "## Non-Negotiable Rules\n",
+        "- NEVER hardcode credentials, tokens, or API keys",
+        "- NEVER use SELECT * in production",
+        "- ALWAYS validate user input at the boundary",
+        "- ALWAYS use parameterized SQL",
+        "",
+        "## Workflow\n",
+        "1. Spec first → then code",
+        "2. Tests first (TDD)",
+        "3. Small targeted changes over large rewrites",
+        "4. Use orchestrator to coordinate multi-agent tasks",
+    ]
+
+    content = "\n".join(lines)
+    out = target / "AGENTS.md"
+    if not DRY_RUN:
+        out.write_text(content, encoding="utf-8")
+        ok("AGENTS.md → combined routing table written")
+    else:
+        dry("WOULD WRITE: AGENTS.md")
+
+
 def update_agents_only(target):
     """Update agents, rules, templates — preserve all context files."""
     header("Updating agents only (preserving context)...")
@@ -115,7 +257,6 @@ def update_agents_only(target):
         src = SCRIPT_DIR / subdir
         if src.exists():
             copy_item(src, target / subdir, f"{subdir}/", overwrite_all=True)
-    # New flat structure: agents/, rules/*.md, spec/commands.md, spec/templates/
     for item in ["agents", "rules", "spec/templates"]:
         src = SCRIPT_DIR / ".ai" / item
         dst = target / ".ai" / item
@@ -127,13 +268,19 @@ def update_agents_only(target):
         if src.exists():
             dst.parent.mkdir(parents=True, exist_ok=True)
             copy_item(src, dst, f".ai/{f}", overwrite_all=True)
-    if not (target / ".ai/context/wizard-answers.json").exists():
-        copy_item(SCRIPT_DIR / "CLAUDE.md", target / "CLAUDE.md", "CLAUDE.md", overwrite_all=True)
+    # Also update agency-agents
+    if not AG_ONLY and not NO_AGENCY:
+        divisions = get_divisions()
+        agency_root = ensure_agency_cache()
+        if agency_root:
+            header("Updating agency-agents...")
+            total = install_agency_agents(target, agency_root, divisions, overwrite_all=True)
+            ok(f"agency-agents updated: {total} agents")
+            build_agents_md(target, divisions, agency_root, overwrite_all=True)
     info("Context files preserved: PROJECT.md, STACK.md, RULES.md, constitution.md")
 
 def make_dirs(target, use_opencode=True, use_speckit=True):
-    # Flat new structure — no ecc/, no sub-agents/, no rules/php/, no rules/common/
-    dirs = ["specs", ".ai/agents", ".ai/rules", ".ai/context", ".claude/commands"]
+    dirs = ["specs", ".ai/agents", ".ai/rules", ".ai/context", ".claude/commands", ".claude/agents"]
     if use_opencode: dirs.append(".opencode/agents")
     if use_speckit:  dirs += [".ai/spec/memory", ".ai/spec/templates"]
     if not DRY_RUN:
@@ -149,14 +296,15 @@ def update_gitignore(target):
         with open(gi, "a", encoding="utf-8") as f:
             f.write("\n# ag_ai\n" + "\n".join(new_entries) + "\n")
         ok("Updated .gitignore")
-    elif new_entries and DRY_RUN:
-        dry(f"WOULD ADD to .gitignore: {', '.join(new_entries)}")
 
 def main():
-    if DRY_RUN:       print(f"\n{BOLD}  ag_ai -- DRY RUN (no files written){RESET}")
-    elif AGENTS_ONLY: print(f"\n{BOLD}  ag_ai -- Update Agents Only{RESET}")
-    elif AUTO_MODE:   print(f"\n{BOLD}  ag_ai -- Installing (auto mode)...{RESET}")
-    else:             print(f"\n{BOLD}{'='*50}\n   ag_ai -- AI Infrastructure Setup\n{'='*50}{RESET}")
+    if DRY_RUN:       print(f"\n{BOLD}  ag_ai x agency-agents -- DRY RUN{RESET}")
+    elif AGENTS_ONLY: print(f"\n{BOLD}  ag_ai x agency-agents -- Update Agents Only{RESET}")
+    elif AUTO_MODE:   print(f"\n{BOLD}  ag_ai x agency-agents -- Installing (auto)...{RESET}")
+    else:
+        print(f"\n{BOLD}{'='*54}")
+        print(f"   ag_ai x agency-agents -- Merged Installer v3.0")
+        print(f"{'='*54}{RESET}")
 
     target = get_target()
     info(f"Target: {target}")
@@ -171,46 +319,45 @@ def main():
         if existing_check:
             overwrite_all = ask_yes("Found existing files. Overwrite all?", default=True)
 
-    tool_options = [
-        ("Claude Code",  "slash commands: /tdd  /security  /speckit.*"),
-        ("OpenCode",     "YAML agents: use orchestrator to ..."),
-        ("Both",         "Claude Code + OpenCode"),
-    ]
-    tool_idx     = ask_choice("Which AI tool?", tool_options)
-    use_claude   = (0 in tool_idx or 2 in tool_idx)
-    use_opencode = (1 in tool_idx or 2 in tool_idx)
-
-    comp_options = [
-        ("Agents",    "all 18 agent markdown instructions"),
-        ("Rules",     "common.md + php.md"),
-        ("Spec Kit",  "commands.md + templates"),
-    ]
-    comp_idx        = ask_choice("Which components?", comp_options)
-    install_agents  = (0 in comp_idx)
-    install_rules   = (1 in comp_idx)
-    install_speckit = (2 in comp_idx)
-
-    header("Installing...")
+    # ── Step 1: ag_ai core files ────────────────────────────────────────────
+    header("Installing ag_ai core files...")
     copy_item(SCRIPT_DIR/"CLAUDE.md", target/"CLAUDE.md", "CLAUDE.md", overwrite_all=overwrite_all)
     install_ai_folder(target, overwrite_all=overwrite_all)
-    if use_claude:   copy_item(SCRIPT_DIR/".claude",   target/".claude",   ".claude/",   overwrite_all=overwrite_all)
-    if use_opencode: copy_item(SCRIPT_DIR/".opencode", target/".opencode", ".opencode/", overwrite_all=overwrite_all)
-    if not DRY_RUN:
-        ai_path = target / ".ai"
-        if not install_agents  and (ai_path/"agents").exists():   shutil.rmtree(ai_path/"agents")
-        if not install_rules   and (ai_path/"rules").exists():    shutil.rmtree(ai_path/"rules")
-        if not install_speckit and (ai_path/"spec").exists():     shutil.rmtree(ai_path/"spec")
-    make_dirs(target, use_opencode=use_opencode, use_speckit=install_speckit)
+    copy_item(SCRIPT_DIR/".claude",   target/".claude",   ".claude/",   overwrite_all=overwrite_all)
+    copy_item(SCRIPT_DIR/".opencode", target/".opencode", ".opencode/", overwrite_all=overwrite_all)
+    make_dirs(target)
     update_gitignore(target)
-    if not DRY_RUN:
-        ai_path = target / ".ai"
-        md_count = len(list(ai_path.rglob("*.md"))) if ai_path.exists() else 0
-        oc_count = len(list((target/".opencode"/"agents").glob("*.yml"))) if (target/".opencode"/"agents").exists() else 0
-        parts = [f"{md_count} MD files"]
-        if oc_count: parts.append(f"{oc_count} OpenCode agents")
-        print(f"\n{GREEN}{BOLD}  Done! {' + '.join(parts)} installed.{RESET}\n")
-    else:
-        print(f"\n{CYAN}{BOLD}  Dry run complete. No files were written.{RESET}\n")
+
+    # ── Step 2: agency-agents ───────────────────────────────────────────────
+    agency_root  = None
+    agency_total = 0
+    divisions    = []
+
+    if not AG_ONLY and not NO_AGENCY:
+        divisions   = get_divisions()
+        agency_root = ensure_agency_cache()
+        if agency_root:
+            header(f"Installing agency-agents ({len(divisions)} divisions)...")
+            agency_total = install_agency_agents(target, agency_root, divisions, overwrite_all)
+            ok(f"Total agency-agents installed: {agency_total}")
+
+    # ── Step 3: AGENTS.md ───────────────────────────────────────────────────
+    header("Generating AGENTS.md...")
+    build_agents_md(target, divisions, agency_root, overwrite_all)
+
+    # ── Summary ─────────────────────────────────────────────────────────────
+    ag_count = len(list((target/".opencode"/"agents").glob("*.yml"))) if not DRY_RUN else 18
+    print(f"\n{GREEN}{BOLD}{'='*54}")
+    print(f"  Done! ag_ai installed successfully.")
+    print(f"{'='*54}{RESET}")
+    print(f"  {CYAN}ag_ai agents:{RESET}     {ag_count} YAML agents")
+    if agency_total:
+        print(f"  {CYAN}agency-agents:{RESET}    {agency_total} agents ({len(divisions)} divisions)")
+        print(f"  {CYAN}Divisions:{RESET}        {', '.join(divisions)}")
+    print(f"\n  {YELLOW}Next steps:{RESET}")
+    print(f"  1. C:\\ag_ai\\run.bat wizard \"{target}\"")
+    print(f"  2. cd \"{target}\" && opencode")
+    print(f"     use orchestrator agent to manage: [task]\n")
 
 if __name__ == "__main__":
     main()

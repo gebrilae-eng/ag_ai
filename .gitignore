@@ -1,0 +1,13 @@
+# ag_ai — gitignore
+
+# agency-agents local cache (clone locally, don't commit)
+.agency-agents-cache/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Misc
+.env
+*.log
