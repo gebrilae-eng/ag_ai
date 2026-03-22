@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 """
 ag_ai v5 -- wizard.py
-يسأل عن مشروعك مرة واحدة ويولد كل شيء تلقائيا:
+Ask 4 questions about your project, generate everything automatically:
   - .ai/context/ files (PROJECT, STACK, RULES, constitution)
   - AGENTS.md + CLAUDE.md + PRD.md
-  - .claude/settings.json  (hooks للـ stack)
-  - .claude/skills/        (SKILL.md files للـ framework)
+  - .claude/settings.json  (stack-aware hooks)
+  - .claude/skills/        (SKILL.md files for your framework)
   - .claude/commands/      (/learn /verify /security /checkpoint /evolve)
   - .claude/security/      (security-audit.js)
   - wizard-answers.json
 
-الاستخدام:
+Usage:
   python wizard.py
   python wizard.py D:\\my-project
 """
@@ -55,9 +55,9 @@ def ask_multi(q, options):
     print(f"\n{CYAN}  -> {q}{RESET}")
     for i, o in enumerate(options, 1):
         print(f"     {BOLD}{i}{RESET}) {o}")
-    print(f"     {BOLD}0{RESET}) {DIM}الكل{RESET}")
+    print(f"     {BOLD}0{RESET}) All")
     try:
-        raw = input("     اختر ارقام (مثال: 1 3) او 0 للكل: ").strip()
+        raw = input("     Choose numbers (e.g. 1 3) or 0 for all: ").strip()
     except (EOFError, KeyboardInterrupt): return options
     if not raw or raw == "0": return options
     result = []
@@ -73,28 +73,28 @@ def ask_multi(q, options):
 # ================================================================
 def collect_answers():
     a = {}
-    title("1 / 4  --  معلومات المشروع")
-    a["name"]         = ask("اسم المشروع", "My Project")
-    a["description"]  = ask("ماذا يفعل؟")
-    a["type"]         = ask("النوع (web / api / bot / automation / cli)", "web")
-    a["status"]       = ask("الحالة (new / development / production)", "new")
-    a["out_of_scope"] = ask("ما الذي لا يفعله؟", "Not defined yet")
+    title("1 / 4  --  Project Info")
+    a["name"]         = ask("Project name", "My Project")
+    a["description"]  = ask("What does it do?")
+    a["type"]         = ask("Type (web / api / bot / automation / cli)", "web")
+    a["status"]       = ask("Status (new / development / production)", "new")
+    a["out_of_scope"] = ask("What does it NOT do?", "Not defined yet")
 
     title("2 / 4  --  Tech Stack")
-    a["backend"]   = ask("Backend (مثال: PHP vanilla / Laravel / Node.js / Python+Django)", "PHP vanilla")
-    a["db_engine"] = ask("DB (مثال: MySQL 8 / PostgreSQL / MongoDB / SQLite / None)", "MySQL 8")
-    a["db_name"]   = ask("اسم قاعدة البيانات", "my_db")
-    a["db_user"]   = ask("اسم المستخدم", "root")
-    a["db_pass"]   = ask("كلمة المرور (.env فقط)", "")
-    a["frontend"]  = ask("Frontend (مثال: HTML/JS / React / Vue / Blade / None)", "HTML/CSS/JS")
-    a["local"]     = ask("بيئة التطوير (مثال: Laragon / Docker / XAMPP / venv)", "Laragon")
-    a["integrations"] = ask_multi("التكاملات؟",
+    a["backend"]   = ask("Backend (e.g. PHP vanilla / Laravel / Node.js / Python+Django)", "PHP vanilla")
+    a["db_engine"] = ask("Database (e.g. MySQL 8 / PostgreSQL / MongoDB / SQLite / None)", "MySQL 8")
+    a["db_name"]   = ask("Database name", "my_db")
+    a["db_user"]   = ask("DB username", "root")
+    a["db_pass"]   = ask("DB password (.env only)", "")
+    a["frontend"]  = ask("Frontend (e.g. HTML/JS / React / Vue / Blade / None)", "HTML/CSS/JS")
+    a["local"]     = ask("Local dev env (e.g. Laragon / Docker / XAMPP / venv)", "Laragon")
+    a["integrations"] = ask_multi("Integrations?",
         ["Telegram bot", "n8n workflows", "REST APIs", "WhatsApp", "Email", "Docker", "None"])
 
-    title("3 / 4  --  القواعد")
-    a["hard_rules"] = ask("قواعد صارمة؟ (مثال: لا حذف فعلي، الاسعار بالجنيه)", "")
-    a["language"]   = ask("لغة التوثيق (English / Arabic / Both)", "Both")
-    a["ai_tool"]    = ask("اداة AI (claude / opencode / both)", "both")
+    title("3 / 4  --  Rules")
+    a["hard_rules"] = ask("Hard business rules? (e.g. no hard delete, prices in EGP)", "")
+    a["language"]   = ask("Docs language (English / Arabic / Both)", "Both")
+    a["ai_tool"]    = ask("AI tool (claude / opencode / both)", "both")
     return a
 
 # ================================================================
@@ -916,15 +916,15 @@ process.stdin.on('end',()=>{
 # ================================================================
 def write_file(path_obj, content, label, overwrite_all=False):
     if path_obj.exists() and not overwrite_all:
-        if not ask_yes(f"  {label} موجود. استبدال؟", default=True):
-            warn(f"تخطي: {label}"); return
+        if not ask_yes(f"  {label} already exists. Overwrite?", default=True):
+            warn(f"Skipped: {label}"); return
     path_obj.parent.mkdir(parents=True, exist_ok=True)
     path_obj.write_text(content, encoding="utf-8")
     ok(label)
 
 def install_all(project_path, answers, overwrite_all=False):
 
-    title("كتابة ملفات المشروع...")
+    title("Writing project files...")
     ctx = project_path / ".ai" / "context"
     write_file(ctx / "PROJECT.md",         gen_project_md(answers),   ".ai/context/PROJECT.md",  overwrite_all)
     write_file(ctx / "STACK.md",           gen_stack_md(answers),     ".ai/context/STACK.md",    overwrite_all)
@@ -942,7 +942,7 @@ def install_all(project_path, answers, overwrite_all=False):
         json.dumps(ans_copy, ensure_ascii=False, indent=2), encoding="utf-8")
     ok(".ai/context/wizard-answers.json")
 
-    title("توليد Hooks...")
+    title("Generating Hooks...")
     hooks_data = generate_hooks(answers)
     settings_p = project_path / ".claude" / "settings.json"
     settings_p.parent.mkdir(parents=True, exist_ok=True)
@@ -961,7 +961,7 @@ def install_all(project_path, answers, overwrite_all=False):
     post_c = len(hooks_data["hooks"].get("PostToolUse", []))
     ok(f"  Hooks: {pre_c} PreToolUse + {post_c} PostToolUse")
 
-    title("توليد Skills...")
+    title("Generating Skills...")
     selected = select_skills(answers)
     for dest in [Path.home()/".claude"/"skills", project_path/".claude"/"skills"]:
         for name in selected:
@@ -972,7 +972,7 @@ def install_all(project_path, answers, overwrite_all=False):
             (skill_dir / "SKILL.md").write_text(SKILL_TEMPLATES[name](answers), encoding="utf-8")
     ok(f"Skills ({len(selected)}): {', '.join(selected)}")
 
-    title("تثبيت Commands...")
+    title("Installing Commands...")
     for dest in [Path.home()/".claude"/"commands", project_path/".claude"/"commands"]:
         dest.mkdir(parents=True, exist_ok=True)
         for fname, content in COMMANDS.items():
@@ -985,7 +985,7 @@ def install_all(project_path, answers, overwrite_all=False):
     (obs_dir / "session-observer.js").write_text(SESSION_OBSERVER, encoding="utf-8")
     ok("session-observer.js (background learning)")
 
-    title("توليد Security Audit...")
+    title("Generating Security Audit...")
     audit = generate_security_audit(answers)
     for dest in [Path.home()/".claude"/"security", project_path/".claude"/"security"]:
         dest.mkdir(parents=True, exist_ok=True)
@@ -1012,24 +1012,24 @@ def get_project_path():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if args: return Path(args[0]).resolve()
     print(f"\n{BOLD}  ag_ai v5 -- Project Wizard{RESET}\n")
-    raw = ask("مسار مجلد المشروع")
+    raw = ask("Project folder path")
     p = Path(raw).resolve() if raw else Path.cwd()
     if not p.exists(): p.mkdir(parents=True)
     return p
 
 def print_summary(a):
-    title("ملخص -- راجع قبل الكتابة")
+    title("Summary -- Review before writing")
     print(f"""
-  المشروع:      {a['name']}
-  الوصف:        {a['description']}
-  النوع:        {a['type']} / {a['status']}
+  Project:      {a['name']}
+  Description:  {a['description']}
+  Type:         {a['type']} / {a['status']}
   Backend:      {a['backend']}
   DB:           {a['db_engine']} / {a['db_name']}
   Frontend:     {a['frontend']}
-  Server:       {a['local']}
+  Local server: {a['local']}
   Integrations: {', '.join(a['integrations'])}
-  قواعد:        {a['hard_rules'] or '(لا يوجد)'}
-  اللغة:        {a['language']}
+  Hard rules:   {a['hard_rules'] or '(none)'}
+  Language:     {a['language']}
 """)
 
 def main():
@@ -1038,30 +1038,30 @@ def main():
     print(f"{'='*52}{RESET}")
 
     project_path = get_project_path()
-    print(f"\n  {YELLOW}المشروع:{RESET} {project_path}")
+    print(f"\n  {YELLOW}Project:{RESET} {project_path}")
 
     answers = collect_answers()
     print_summary(answers)
 
-    if not ask_yes("كل شيء صحيح؟ ابدأ التوليد", default=True):
-        print(f"\n  {YELLOW}ملغي.{RESET}"); sys.exit(0)
+    if not ask_yes("Everything correct? Start generating", default=True):
+        print(f"\n  {YELLOW}Cancelled.{RESET}"); sys.exit(0)
 
     overwrite_all = False
     existing = [f for f in ["CLAUDE.md","AGENTS.md","PRD.md"] if (project_path/f).exists()]
     if existing:
-        overwrite_all = ask_yes(f"يوجد {len(existing)} ملف سابق. استبدال الكل؟", default=True)
+        overwrite_all = ask_yes(f"Found {len(existing)} existing file(s). Overwrite all?", default=True)
 
     install_all(project_path, answers, overwrite_all)
 
     # Final summary
     tool = answers["ai_tool"].lower()
     print(f"\n{BOLD}{'='*52}")
-    print(f"  OK  {answers['name']} جاهز!")
+    print(f"  Done! {answers['name']} is ready.")
     print(f"{'='*52}{RESET}\n")
-    print(f"  ما تم توليده:")
+    print(f"  Generated:")
     print(f"    - .ai/context/    -- PROJECT, STACK, RULES, constitution")
     print(f"    - AGENTS.md, CLAUDE.md, PRD.md")
-    print(f"    - .claude/settings.json -- hooks للـ {answers['backend']}")
+    print(f"    - .claude/settings.json -- hooks for {answers['backend']}")
     print(f"    - .claude/skills/       -- {', '.join(select_skills(answers))}")
     print(f"    - .claude/commands/     -- /learn /verify /security /checkpoint /evolve")
     print(f"    - .claude/security/     -- security-audit.js")
@@ -1074,7 +1074,7 @@ def main():
         print(f"  OpenCode:")
         print(f"    cd \"{project_path}\" && opencode")
         print(f"    use orchestrator agent to manage: [task]\n")
-    print(f"  بعد كل session:")
+    print(f"  After each session:")
     print(f"    /learn -> /instinct-status -> /verify -> /security\n")
 
 if __name__ == "__main__":
