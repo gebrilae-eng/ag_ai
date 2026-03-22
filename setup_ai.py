@@ -257,6 +257,10 @@ def update_agents_only(target):
         src = SCRIPT_DIR / subdir
         if src.exists():
             copy_item(src, target / subdir, f"{subdir}/", overwrite_all=True)
+    # Also update project-level opencode.json
+    oc_json = SCRIPT_DIR / "opencode.json"
+    if oc_json.exists():
+        copy_item(oc_json, target / "opencode.json", "opencode.json", overwrite_all=True)
     for item in ["agents", "rules", "spec/templates"]:
         src = SCRIPT_DIR / ".ai" / item
         dst = target / ".ai" / item
@@ -325,6 +329,7 @@ def main():
     install_ai_folder(target, overwrite_all=overwrite_all)
     copy_item(SCRIPT_DIR/".claude",   target/".claude",   ".claude/",   overwrite_all=overwrite_all)
     copy_item(SCRIPT_DIR/".opencode", target/".opencode", ".opencode/", overwrite_all=overwrite_all)
+    copy_item(SCRIPT_DIR/"opencode.json", target/"opencode.json", "opencode.json", overwrite_all=overwrite_all)
     make_dirs(target)
     update_gitignore(target)
 
@@ -346,11 +351,11 @@ def main():
     build_agents_md(target, divisions, agency_root, overwrite_all)
 
     # ── Summary ─────────────────────────────────────────────────────────────
-    ag_count = len(list((target/".opencode"/"agents").glob("*.yml"))) if not DRY_RUN else 18
+    ag_count = len(list((target/".opencode"/"agents").glob("*.md"))) if not DRY_RUN else 18
     print(f"\n{GREEN}{BOLD}{'='*54}")
     print(f"  Done! ag_ai installed successfully.")
     print(f"{'='*54}{RESET}")
-    print(f"  {CYAN}ag_ai agents:{RESET}     {ag_count} YAML agents")
+    print(f"  {CYAN}ag_ai agents:{RESET}     {ag_count} MD agents")
     if agency_total:
         print(f"  {CYAN}agency-agents:{RESET}    {agency_total} agents ({len(divisions)} divisions)")
         print(f"  {CYAN}Divisions:{RESET}        {', '.join(divisions)}")

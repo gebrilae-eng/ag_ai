@@ -1,0 +1,113 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "orchestrator": {
+      "name": "orchestrator",
+      "description": "Project manager - delegates tasks, never writes code itself",
+      "mode": "primary",
+      "tools": { "read": true, "glob": true, "grep": true, "task": true }
+    },
+    "coder": {
+      "name": "coder",
+      "description": "Senior developer - clean production-ready PHP/JS/SQL code",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "db-agent": {
+      "name": "db-agent",
+      "description": "Database specialist - MySQL schema, queries, migrations, indexes",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "api-agent": {
+      "name": "api-agent",
+      "description": "API and integration specialist - REST endpoints, webhooks",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "architect": {
+      "name": "architect",
+      "description": "Software architect - system design, trade-offs, ADRs",
+      "mode": "primary",
+      "tools": { "read": true, "write": true, "glob": true, "grep": true }
+    },
+    "tdd-guide": {
+      "name": "tdd-guide",
+      "description": "TDD specialist - Red Green Refactor, runs tests",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "security-reviewer": {
+      "name": "security-reviewer",
+      "description": "Security specialist - OWASP Top 10 audit, secrets detection",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "code-reviewer": {
+      "name": "code-reviewer",
+      "description": "Code quality reviewer - correctness, performance, style",
+      "mode": "primary",
+      "tools": { "read": true, "write": true, "glob": true, "grep": true }
+    },
+    "database-reviewer": {
+      "name": "database-reviewer",
+      "description": "Database review - schema quality, query safety, indexing",
+      "mode": "primary",
+      "tools": { "read": true, "write": true, "glob": true, "grep": true }
+    },
+    "refactor-cleaner": {
+      "name": "refactor-cleaner",
+      "description": "Refactoring specialist - improves structure without changing behavior",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "build-error-resolver": {
+      "name": "build-error-resolver",
+      "description": "Build error specialist - diagnoses syntax, dependency, config errors",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "doc-updater": {
+      "name": "doc-updater",
+      "description": "Documentation specialist - keeps docs in sync with code",
+      "mode": "primary",
+      "tools": { "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "spec-workflow": {
+      "name": "spec-workflow",
+      "description": "Spec-first planning - specify clarify plan tasks implement",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true, "task": true }
+    },
+    "sql-helper": {
+      "name": "sql-helper",
+      "description": "MySQL query specialist - optimized parameterized queries",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "glob": true, "grep": true }
+    },
+    "telegram-bot": {
+      "name": "telegram-bot",
+      "description": "Telegram bot specialist - HTML formatting, Arabic RTL, splitting",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "n8n-workflow": {
+      "name": "n8n-workflow",
+      "description": "n8n automation - workflow design, code nodes, error handling",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "debugger": {
+      "name": "debugger",
+      "description": "Bug investigator - Reproduce Isolate Hypothesize Fix Verify",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    },
+    "test-writer": {
+      "name": "test-writer",
+      "description": "Test writing specialist - unit integration E2E with edge cases",
+      "mode": "primary",
+      "tools": { "bash": true, "read": true, "write": true, "edit": true, "glob": true, "grep": true }
+    }
+  }
+}
